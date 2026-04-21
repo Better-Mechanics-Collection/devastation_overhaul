@@ -31,11 +31,12 @@ state_devastation_modifier = {
     army_speed_factor = state_devastation_modifier^6
 	local_org_regain = state_devastation_modifier^7
 	max_dig_in_factor = state_devastation_modifier^8
-	attrition_for_controller = state_devastation_modifier^9
-	local_manpower = state_devastation_modifier^10
-	local_non_core_manpower = state_devastation_modifier^11
-	resistance_growth = state_devastation_modifier^12
-	compliance_growth = state_devastation_modifier^13
+	## attrition_for_controller = state_devastation_modifier^9
+	
+	local_manpower = state_devastation_modifier^9
+	local_non_core_manpower = state_devastation_modifier^10
+	resistance_growth = state_devastation_modifier^11
+	compliance_growth = state_devastation_modifier^12
 }
 
 country_devastation_modifier = {
@@ -47,12 +48,12 @@ country_devastation_modifier = {
 	stability_factor = country_devastation_modifier^0
 	war_support_factor = country_devastation_modifier^1
 	political_power_factor = country_devastation_modifier^2
-	consumer_goods_factor = country_devastation_modifier^3
-	research_speed_factor = country_devastation_modifier^4
-	monthly_population = country_devastation_modifier^5
-	production_factory_efficiency_gain_factor = country_devastation_modifier^6
-	conscription_factor = country_devastation_modifier^7
-	## production_speed_buildings_factor = country_devastation_modifier^8
+	research_speed_factor = country_devastation_modifier^3
+	monthly_population = country_devastation_modifier^4
+	production_factory_efficiency_gain_factor = country_devastation_modifier^5
+	conscription_factor = country_devastation_modifier^6
+	
+	## production_speed_buildings_factor = country_devastation_modifier^2
 	
     #custom_modifier_tooltip = country_devastation_modifier_tt_2
 	#country_weekly_stability_refugees = country_refugee_stability_weekly

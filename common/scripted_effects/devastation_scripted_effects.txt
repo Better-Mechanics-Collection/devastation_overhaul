@@ -207,13 +207,6 @@ devastation_state_calc_modifiers = {
 	divide_temp_variable = { temp = temp_100 }
 	add_to_array = { state_devastation_modifier = temp }
 	
-	# division_attrition
-	set_temp_variable = { temp = state_devastation_value }
-	set_temp_variable = { temp_100 = 100 }
-	divide_temp_variable = { temp_100 = global.devastation_state_division_attrition }
-	divide_temp_variable = { temp = temp_100 }
-	add_to_array = { state_devastation_modifier = temp }
-	
 	# local_manpower
 	set_temp_variable = { temp = state_devastation_value }
 	set_temp_variable = { temp_100 = 100 }
@@ -245,44 +238,69 @@ devastation_state_calc_modifiers = {
 	force_update_dynamic_modifier = yes
 }
 
-devastation_country_calc_value = { 
+devastation_country_calc_value = {
+	# =====================================================================
+	# NATIONAL DEVASTATION SCORE (NDS) — v2 FORMULA
+	# =====================================================================
+	# NDS = Σ(W_i × D_i) / Σ(W_i)   →  result is 0–100
+	# Where:
+	#   W_i = state_population_k × C_i  (population weighted by state type)
+	#   D_i = state_devastation_value (0–100)
+	#   C_i = state type multiplier (wasteland=5 ... megalopolis=17)
+	#         reuses devastation_get_state_type_multiplier
+	#
+	# Because C_i appears in BOTH numerator and denominator it cannot
+	# inflate the result — output is always 0–100. It only shifts the
+	# weighted average toward urban states, so a bombed megalopolis
+	# drags the NDS up more than an equivalent rural state.
+	# =====================================================================
+
 	clear_variable = country_devastation_value
-	set_temp_variable = { devastation_country_score = 0 } 
-	set_temp_variable = { devastation_country_population = 0 } 
-	
+	set_temp_variable = { nds_numerator = 0 }
+	set_temp_variable = { nds_denominator = 0 }
+
 	every_owned_state = {
-		set_temp_variable = { devastation_state_score = 0 }
-		
-		set_temp_variable = { devastation_percentage = state_devastation_value }
-		divide_temp_variable = { devastation_percentage = 100 }
-		##log = "[THIS.GetName]: Devastation Percentage - [?devastation_percentage|%]"
-		
+		# Get C_i for this state (wasteland=5 ... megalopolis=17)
 		devastation_get_state_type_multiplier = yes
-		add_to_temp_variable = { devastation_state_type_multiplier = 5 }
-		##log = "[THIS.GetName]: Devastation State Multiplier - [?devastation_state_type_multiplier]"
-		
-		set_temp_variable = { devastation_state_score = state_population_k }
-		divide_temp_variable = { devastation_state_score = 1000 }
-		##log = "[THIS.GetName]: Devastation State Population - [?state_population_k]"
-		
-		multiply_temp_variable = { devastation_state_score = devastation_percentage }
-		multiply_temp_variable = { devastation_state_score = devastation_state_type_multiplier }
-		
-		##log = "[THIS.GetName]: Devastation State Score - [?devastation_state_score]"
-		add_to_temp_variable = { PREV.devastation_country_score = devastation_state_score }
-		
+
+		# W_i = population x C_i
+		set_temp_variable = { nds_weight = state_population_k }
+		multiply_temp_variable = { nds_weight = devastation_state_type_multiplier }
+
+		# Numerator: W_i x D_i
+		set_temp_variable = { nds_state_contribution = nds_weight }
+		multiply_temp_variable = { nds_state_contribution = state_devastation_value }
+		add_to_temp_variable = { PREV.nds_numerator = nds_state_contribution }
+
+		# Denominator: W_i
+		add_to_temp_variable = { PREV.nds_denominator = nds_weight }
 	}
-	set_temp_variable = { devastation_max_population = max_manpower_k }
-	divide_temp_variable = { devastation_max_population = 1000 }
-	divide_temp_variable = { devastation_country_score = devastation_max_population }
-	
-	set_variable = { country_devastation_value = devastation_country_score }
-	##log = "[THIS.GetName]: [?country_devastation_value] - [?max_manpower_k] K"
+
+	# Compute NDS — guard against division by zero
+	if = {
+		limit = { check_variable = { nds_denominator > 0 } }
+		divide_temp_variable = { nds_numerator = nds_denominator }
+		set_variable = { country_devastation_value = nds_numerator }
+		clamp_variable = { var = country_devastation_value min = 0 max = 100 }
+	}
+	else = {
+		set_variable = { country_devastation_value = 0 }
+	}
+
+	##log = "[THIS.GetName]: NDS=[?country_devastation_value]"
 }
 
-devastation_country_calc_modifiers = { 
+devastation_country_calc_modifiers = {
+	# =====================================================================
+	# NATIONAL DEVASTATION MODIFIERS — v2
+	# =====================================================================
+	# Each modifier = (NDS x global_scale) / 100
+	# NDS is already C_i weighted so urbanized nations naturally score
+	# higher when their cities are hit. No further multiplier needed.
+	# =====================================================================
+
 	if = {
-		limit = { 
+		limit = {
 			NOT = {
 				has_dynamic_modifier = {
 					modifier = country_devastation_modifier
@@ -293,63 +311,50 @@ devastation_country_calc_modifiers = {
 			modifier = country_devastation_modifier
 		}
 	}
-	#set_variable = { country_devastation_value = 100 }
 	clear_array = country_devastation_modifier
-	
+
 	# stability_factor
 	set_temp_variable = { temp = country_devastation_value }
 	multiply_temp_variable = { temp = global.country_devastation_stability_factor }
 	divide_temp_variable = { temp = 100 }
 	add_to_array = { country_devastation_modifier = temp }
-	
+
 	# war_support_factor
 	set_temp_variable = { temp = country_devastation_value }
 	multiply_temp_variable = { temp = global.country_devastation_war_support_factor }
 	divide_temp_variable = { temp = 100 }
 	add_to_array = { country_devastation_modifier = temp }
-	
+
 	# political_power_factor
 	set_temp_variable = { temp = country_devastation_value }
 	multiply_temp_variable = { temp = global.country_devastation_political_power_factor }
 	divide_temp_variable = { temp = 100 }
 	add_to_array = { country_devastation_modifier = temp }
-	
-	# consumer_goods_factor
-	set_temp_variable = { temp = country_devastation_value }
-	multiply_temp_variable = { temp = global.country_devastation_consumer_goods_factor }
-	divide_temp_variable = { temp = 100 }
-	add_to_array = { country_devastation_modifier = temp }
-	
+
 	# research_speed_factor
 	set_temp_variable = { temp = country_devastation_value }
 	multiply_temp_variable = { temp = global.country_devastation_research_speed_factor }
 	divide_temp_variable = { temp = 100 }
 	add_to_array = { country_devastation_modifier = temp }
-	
+
 	# monthly_population
 	set_temp_variable = { temp = country_devastation_value }
 	multiply_temp_variable = { temp = global.country_devastation_monthly_population }
 	divide_temp_variable = { temp = 100 }
 	add_to_array = { country_devastation_modifier = temp }
-	
+
 	# production_factory_efficiency_gain_factor
 	set_temp_variable = { temp = country_devastation_value }
 	multiply_temp_variable = { temp = global.country_devastation_production_factory_efficiency_gain_factor }
 	divide_temp_variable = { temp = 100 }
 	add_to_array = { country_devastation_modifier = temp }
-	
+
 	# conscription_factor
 	set_temp_variable = { temp = country_devastation_value }
 	multiply_temp_variable = { temp = global.country_devastation_conscription_factor }
 	divide_temp_variable = { temp = 100 }
 	add_to_array = { country_devastation_modifier = temp }
-	
-	# production_speed_buildings_factor
-	set_temp_variable = { temp = country_devastation_value }
-	multiply_temp_variable = { temp = global.country_devastation_production_speed_buildings_factor }
-	divide_temp_variable = { temp = 100 }
-	add_to_array = { country_devastation_modifier = temp }
-	
+
 	force_update_dynamic_modifier = yes
 }
 

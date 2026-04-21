@@ -47,6 +47,7 @@ is_town_state = {
 		has_state_category = minor_port
 		has_state_category = four
 		has_state_category = village
+		has_state_category = developed_rural
 	}
 }
 

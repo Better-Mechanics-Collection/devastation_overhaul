@@ -4,7 +4,6 @@ tags={
 }
 dependencies={
 	"The Fire Rises"
-	"The Fire Rises"
 	"The Great War Redux"
 	"The Great War Redux - 1.17.*"
 }

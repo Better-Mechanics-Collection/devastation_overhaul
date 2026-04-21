@@ -54,8 +54,9 @@ on_actions = {
 			
 			set_variable = { global.devastation_state_division_speed = -0.35 }
 			set_variable = { global.devastation_state_organization_regain = -0.20 }
-			set_variable = { global.devastation_state_max_entrenchment = 0.20 }
-			set_variable = { global.devastation_state_division_attrition = 0.15 }
+			set_variable = { global.devastation_state_max_entrenchment = 0.25 }
+			## set_variable = { global.devastation_state_division_attrition = 0.15 }
+			
 			set_variable = { global.devastation_state_local_manpower = -0.25 }
 			set_variable = { global.devastation_state_local_non_core_manpower = -0.50 }
 			set_variable = { global.devastation_state_resistance_growth = 0.30 }
@@ -63,15 +64,13 @@ on_actions = {
 			
 			# multipliers for national devastation score
 			# 	lower values mean harsher penalties
-			set_variable = { global.country_devastation_stability_factor = -2.00 }
-			set_variable = { global.country_devastation_war_support_factor = -4.00 }
-			set_variable = { global.country_devastation_political_power_factor = -8.00 }
-			set_variable = { global.country_devastation_consumer_goods_factor = 2.00 }
-			set_variable = { global.country_devastation_research_speed_factor = -5.00 }
-			set_variable = { global.country_devastation_monthly_population = -3.00 }
-			set_variable = { global.country_devastation_production_factory_efficiency_gain_factor = -5.00 }
-			set_variable = { global.country_devastation_conscription_factor = -5.00 }
-			set_variable = { global.country_devastation_production_speed_buildings_factor = -3.00 }
+			set_variable = { global.country_devastation_stability_factor = -1.00 }
+			set_variable = { global.country_devastation_war_support_factor = -1.50 }
+			set_variable = { global.country_devastation_political_power_factor = -0.85 }
+			set_variable = { global.country_devastation_research_speed_factor = -0.90 }
+			set_variable = { global.country_devastation_monthly_population = -1.50 }
+			set_variable = { global.country_devastation_production_factory_efficiency_gain_factor = -0.95 }
+			set_variable = { global.country_devastation_conscription_factor = -0.85 }
 			
 			# how much the refugee stability impact wears off monthly
 			# 	lower value means faster wearing off

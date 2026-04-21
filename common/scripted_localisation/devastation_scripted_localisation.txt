@@ -339,9 +339,13 @@ defined_text = {
 		}
 		localization_key = "less than 0.1%"
 	}
+
 	text = {
-		localization_key = LART_UNASSIMILATED_POPS_TEXT
+			localization_key = "LART_UNASSIMILATED_POPS_TEXT" #lart
 	}
+#lart	text = {
+#lart		localization_key = "[?country_unassimilated_pops_ratio_core|1%%]"
+#lart	}
 }
 defined_text = {
 	name = SDFactors12
