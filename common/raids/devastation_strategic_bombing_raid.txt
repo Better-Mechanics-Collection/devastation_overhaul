@@ -310,7 +310,8 @@ types = {
 						clamp_variable = { var = state_devastation_value min = 0 max = 100 }
 						
 						# Minimal casualties (bombs scattered) - still scales with density
-						set_temp_variable_to_random = { var = casualty_rate min = 0.0005 max = 0.002 }
+						# UPDATED: ×1.5 multiplier for better modern/WW2 balance
+						set_temp_variable_to_random = { var = casualty_rate min = 0.00075 max = 0.003 }
 						
 						# State category multiplier - even scattered bombs kill more in cities
 						if = {
@@ -445,8 +446,9 @@ types = {
 						add_to_variable = { state_devastation_value = devastation_gain }
 						clamp_variable = { var = state_devastation_value min = 0 max = 100 }
 						
-						# Civilian casualties (0.3-0.7% of state) - scales with state density
-						set_temp_variable_to_random = { var = casualty_rate min = 0.003 max = 0.007 }
+						# Civilian casualties (0.6-1.4% of state) - scales with state density
+						# UPDATED: ×2.0 multiplier for better modern/WW2 balance
+						set_temp_variable_to_random = { var = casualty_rate min = 0.006 max = 0.014 }
 						
 						# State category multiplier - dense cities suffer more casualties
 						if = {
@@ -595,8 +597,9 @@ types = {
 						add_to_variable = { state_devastation_value = devastation_gain }
 						clamp_variable = { var = state_devastation_value min = 0 max = 100 }
 						
-						# Heavy civilian casualties (0.7-1.5%) - scales with state density
-						set_temp_variable_to_random = { var = casualty_rate min = 0.007 max = 0.015 }
+						# Heavy civilian casualties (2.1-4.5%) - scales with state density
+						# UPDATED: ×3.0 multiplier for better modern/WW2 balance
+						set_temp_variable_to_random = { var = casualty_rate min = 0.021 max = 0.045 }
 						
 						# State category multiplier - dense cities suffer more casualties
 						if = {
@@ -768,8 +771,9 @@ types = {
 						add_to_variable = { state_devastation_value = devastation_gain }
 						clamp_variable = { var = state_devastation_value min = 0 max = 100 }
 						
-						# CATASTROPHIC civilian casualties (1.0-2.5%) - scales with state density
-						set_temp_variable_to_random = { var = casualty_rate min = 0.010 max = 0.025 }
+						# CATASTROPHIC civilian casualties (4.0-10.0%) - scales with state density
+						# UPDATED: ×4.0 multiplier for better modern/WW2 balance
+						set_temp_variable_to_random = { var = casualty_rate min = 0.040 max = 0.100 }
 						
 						# State category multiplier - FIRESTORMS kill more in dense cities
 						if = {
