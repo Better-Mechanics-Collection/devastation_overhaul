@@ -39,15 +39,15 @@ on_actions = {
 			set_variable = { global.devastation_base_gain_partial_occupation = 1.75 }				#  must also change the loc for SDFactors3Key
 			set_variable = { global.devastation_base_gain_neighbor_state_is_enemy = 0.25 }			#  must also change the loc for SDFactors4Key
 			set_variable = { global.devastation_base_gain_experienced_bombing = 1.5 }				#  must also change the loc for SDFactors5Key
-			set_variable = { global.devastation_base_gain_controller_at_peace_with_owner = -0.05 }	#  must also change the loc for SDFactors6Key
-			set_variable = { global.devastation_base_gain_controller_at_peace = -0.15 }				#  must also change the loc for SDFactors7Key
+			set_variable = { global.devastation_base_gain_controller_at_peace_with_owner = -0.10 }	#  must also change the loc for SDFactors6Key
+			set_variable = { global.devastation_base_gain_controller_at_peace = -0.20 }				#  must also change the loc for SDFactors7Key
 			set_variable = { global.devastation_base_gain_siege = 1.25 }								#  must also change the loc for SDFactors10Key
 			
 			# max values for the state devastation ideas
 			# 	lower values mean harsher penalties
 			set_variable = { global.devastation_local_supplies = -0.50 }
 			set_variable = { global.devastation_local_factories = -0.50 }
-			set_variable = { global.devastation_local_building_slots = -12 }
+			set_variable = { global.devastation_local_building_slots_factor = -2.00 }
 			set_variable = { global.devastation_state_resources_factor = -0.90 }
 			set_variable = { global.devastation_state_production_speed_buildings_factor = -0.75 }
 			set_variable = { global.devastation_state_repair_speed_buildings_factor = -0.50 }
@@ -64,13 +64,13 @@ on_actions = {
 			
 			# multipliers for national devastation score
 			# 	lower values mean harsher penalties
-			set_variable = { global.country_devastation_stability_factor = -1.00 }
-			set_variable = { global.country_devastation_war_support_factor = -1.50 }
-			set_variable = { global.country_devastation_political_power_factor = -0.85 }
-			set_variable = { global.country_devastation_research_speed_factor = -0.90 }
-			set_variable = { global.country_devastation_monthly_population = -1.50 }
-			set_variable = { global.country_devastation_production_factory_efficiency_gain_factor = -0.95 }
-			set_variable = { global.country_devastation_conscription_factor = -0.85 }
+			set_variable = { global.country_devastation_stability_factor = -0.7 }
+			set_variable = { global.country_devastation_war_support_factor = -1.00 }
+			set_variable = { global.country_devastation_political_power_factor = -0.55 }
+			set_variable = { global.country_devastation_research_speed_factor = -0.65 }
+			set_variable = { global.country_devastation_monthly_population = -1.00 }
+			set_variable = { global.country_devastation_production_factory_efficiency_gain_factor = -0.65 }
+			set_variable = { global.country_devastation_conscription_factor = -0.55 }
 			
 			# how much the refugee stability impact wears off monthly
 			# 	lower value means faster wearing off
@@ -80,8 +80,8 @@ on_actions = {
 			# 	higher value means more casualties, min should always be lower than max
 			# 	for example, if 1000 civilians will migrate, 450 to 600 civilians 
 			# 	will fail to migrate and become casualties.
-			set_variable = { global.casualty_multiplier_min = 0.05 }	# 0.1 originally 0.45
-			set_variable = { global.casualty_multiplier_max = 0.50 }	# 0.15 0.3 originally 0.6
+			set_variable = { global.casualty_multiplier_min = 0.12 }	# originally 0.45
+			set_variable = { global.casualty_multiplier_max = 0.60 }	# originally 0.6
 			
 			# pops assimilation
 			set_variable = { global.passive_assimilation_min = 0.01 }
@@ -327,21 +327,20 @@ on_actions = {
 					# =========================================================
 					migration_get_chance = yes
 					devastation_state_trigger_migration = yes
+					devastation_state_trigger_factory_migration_on_capture = yes
 					add_to_variable = { state_control_changed_count = 1 }
-				}
+				}				
 				# Factory migration must run in STATE scope (FROM), not country scope (FROM.FROM)
 				# state_devastation_value, arms_factory etc. are state variables
-				FROM = {
-					devastation_state_trigger_factory_migration_on_capture = yes
-				}
 			}
+			
 		}
 	}
 	
 	on_nuke_drop = {
 		effect = {
 			FROM = {
-				owner = { add_war_support = -0.1 }
+				## owner = { add_war_support = -0.1 }
 				
 				# DIFFERENTIATE CASUALTIES BY NUKE TYPE
 				if = {

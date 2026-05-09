@@ -1,9 +1,9 @@
 on_actions = {
 	on_weekly = {
 		effect = {
-			every_country = {
+			if = {
 				limit = { has_war = yes }
-				
+			
 				# =====================================================================
 				# MILITARY CASUALTIES — WEEKLY DELTA TRACKER
 				# =====================================================================
