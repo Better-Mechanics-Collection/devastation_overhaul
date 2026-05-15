@@ -3466,85 +3466,208 @@ devastation_state_calc_value = {
 		add_to_temp_variable = { base_gain = base_gain_resistance }
 		
 		# ===================================================================
-		# NEW OCCUPATION CASUALTY SYSTEM
+		# OCCUPATION CASUALTY SYSTEM — TUNING KNOBS
+		# All design parameters are defined here for easy adjustment.
 		# ===================================================================
-		
-		# STEP 1: Calculate base weekly death rate from population
-		# Formula: population_k * base_rate
-		# This gives us a baseline: larger populations = more deaths possible
+		#
+		# OCC_BASE_RATE — Weekly deaths as a fraction of state population.
+		# Calibrated against historical WWII occupation data:
+		#   0.04 → ~15,000–20,000/month for 19M Poles under Brutal Oppression (early war)
+		#   Raise to increase all occupation deaths globally.
+		#   Lower to reduce them.
+		set_temp_variable = { occ_base_rate = 0.04 }
+		#
+		# OCC_A_SCALE — Ceiling multiplier for Source A (active violence).
+		# At 100% resistance → base * OCC_A_SCALE.
+		# At 0% resistance  → base * OCC_A_FLOOR.
+		set_temp_variable = { occ_A_scale = 4.95 }     # → ceiling 5.0x
+		set_temp_variable = { occ_A_floor = 0.05 }     # floor at near-zero
+		#
+		# OCC_B1_NORMALIZE — compliance_gain value treated as maximum brutality.
+		# Vanilla Brutal Oppression = -0.11. Modded laws below this exceed 1.0
+		# normalized and are clamped at OCC_B1_GENOCIDE_CAP before scaling.
+		set_temp_variable = { occ_B1_normalize = 0.11 }
+		set_temp_variable = { occ_B1_genocide_cap = 1.5 }   # 1.5 = genocide-tier hard cap
+		set_temp_variable = { occ_B1_scale = 6.9 }          # → ceiling ~10.45x at cap
+		set_temp_variable = { occ_B1_floor = 0.02 }         # lenient law floor (near-zero)
+		#
+		# OCC_B2_HALFSAT — resistance_growth value at which B2 hits 50% of its max.
+		# Lower = B2 saturates faster (resistance growth matters more at low values).
+		set_temp_variable = { occ_B2_halfsat = 0.25 }
+		set_temp_variable = { occ_B2_max = 0.5 }            # max additive contribution
+		#
+		# OCC_B3 — compliance_growth half-saturation points and max contributions.
+		set_temp_variable = { occ_B3_pos_halfsat = 0.10 }   # positive side half-sat
+		set_temp_variable = { occ_B3_pos_max = 0.4 }        # max additive (low compliance growth)
+		set_temp_variable = { occ_B3_neg_halfsat = 0.083 }  # negative side half-sat
+		set_temp_variable = { occ_B3_neg_floor = 0.4 }      # additive floor (neutral compliance growth)
+		set_temp_variable = { occ_B3_neg_max = 0.8 }        # additive range above floor
+		#
+		# OCC_COMPLIANCE_DAMP — how much compliance reduces deaths.
+		# At 100% compliance → deaths multiplied by (1.0 - OCC_COMPLIANCE_DAMP).
+		# 0.8 = 80% reduction at full compliance. Raise to make compliance matter more.
+		set_temp_variable = { occ_compliance_damp_strength = 0.8 }
+		#
+		# OCC_AB_WEIGHT — weight of Source A in the A+B blend (Source B = 1 - this).
+		# 0.5 = equal weight. Lower = structural violence dominates more.
+		set_temp_variable = { occ_ab_weight = 0.5 }
+		# ===================================================================
+
+		# ===================================================================
+		# STEP 1: Base weekly death rate
+		# ===================================================================
 		set_temp_variable = { occupation_death_base = state_population_k }
-		multiply_temp_variable = { occupation_death_base = 0.01 }  # Base weekly death rate (0.01% of population)
-		
-		# STEP 2: Resistance multiplier (higher resistance = more reprisals and deaths)
-		# resistance ranges 0-100, we scale it to 0.1x - 6.0x multiplier
-		# At 0% resistance = 0.1x (minimal deaths - natural/accidental)
-		# At 100% resistance = 6.0x (maximum reprisals and brutality)
-		set_temp_variable = { resistance_factor = resistance }
-		divide_temp_variable = { resistance_factor = 100 }  # Normalize to 0.0-1.0
-		multiply_temp_variable = { resistance_factor = 5.9 }   # Scale to 0.0-5.9
-		add_to_temp_variable = { resistance_factor = 0.1 }     # Make it 0.1-6.0x multiplier
-		
-		multiply_temp_variable = { occupation_death_base = resistance_factor }
-		
-		# STEP 3: Devastation multiplier (destroyed areas = disease, starvation, chaos)
-		# devastation ranges 0-100, we scale it to 1.0x - 4.0x multiplier
+		multiply_temp_variable = { occupation_death_base = occ_base_rate }
+
+		# ===================================================================
+		# STEP 2: SOURCE A — Active Violence (resistance-driven)
+		# Partisans, reprisals, collective punishment, terrorism.
+		# Reads raw resistance only — resistance_target excluded because
+		# brutal laws suppress it heavily, which would paradoxically reduce
+		# deaths under the most murderous regimes. Source B handles
+		# policy-driven deaths independently.
+		# Range: OCC_A_FLOOR – (OCC_A_FLOOR + OCC_A_SCALE)
+		# ===================================================================
+		set_temp_variable = { occ_A = resistance }
+		divide_temp_variable = { occ_A = 100 }
+		multiply_temp_variable = { occ_A = occ_A_scale }
+		add_to_temp_variable = { occ_A = occ_A_floor }
+
+		# ===================================================================
+		# STEP 3: SOURCE B — Structural Violence (occupation-policy-driven)
+		# Forced labor deaths, famine, deportations, systematic killing.
+		# Does not require active resistance — a passive population can
+		# still be slowly exterminated by a brutal enough regime.
+		#
+		# B1 — Law brutality: modifier@compliance_gain (primary)
+		#   Negative = brutal law. Works with ANY modded occupation law
+		#   automatically. Normalized against vanilla max of -0.11.
+		#   Modded genocide-tier laws (below -0.11) normalized above 1.0
+		#   and clamped at OCC_B1_GENOCIDE_CAP.
+		#
+		# B2 — Population mobilizing: modifier@resistance_growth (secondary)
+		#   Diminishing returns curve, saturates toward OCC_B2_MAX.
+		#
+		# B3 — Occupier intent: modifier@compliance_growth (secondary)
+		#   Positive = occupier stabilizing → less neglect death.
+		#   Negative = occupier predatory → more atrocity deaths.
+		# ===================================================================
+
+		# --- B1: Law brutality via compliance_gain modifier ---
+		# Uses a power curve (squaring) so lenient laws cluster near zero
+		# while brutal laws still hit their ceiling.
+		# Linear would make Local Police Force jump 80x above Civilian Oversight —
+		# squaring gives a historically accurate exponential-style curve instead.
+		set_temp_variable = { occ_B1 = modifier@compliance_gain }
+		multiply_temp_variable = { occ_B1 = -1 }                              # flip: negative gain = more death
+		divide_temp_variable = { occ_B1 = occ_B1_normalize }                  # normalize: Brutal Oppression = 1.0
+		clamp_temp_variable = { var = occ_B1 min = 0 max = occ_B1_genocide_cap }
+		set_temp_variable = { occ_B1_copy = occ_B1 }                          # copy for squaring
+		multiply_temp_variable = { occ_B1 = occ_B1_copy }                     # square it → power curve
+		multiply_temp_variable = { occ_B1 = occ_B1_scale }                    # scale
+		add_to_temp_variable = { occ_B1 = occ_B1_floor }                      # floor
+
+		# --- B2: Population mobilizing via resistance_growth modifier ---
+		set_temp_variable = { occ_B2_raw = modifier@resistance_growth }
+		clamp_temp_variable = { var = occ_B2_raw min = 0 max = 9999 }
+		set_temp_variable = { occ_B2_denom = occ_B2_raw }
+		add_to_temp_variable = { occ_B2_denom = occ_B2_halfsat }
+		set_temp_variable = { occ_B2 = occ_B2_raw }
+		divide_temp_variable = { occ_B2 = occ_B2_denom }
+		multiply_temp_variable = { occ_B2 = occ_B2_max }
+
+		# --- B3: Occupier intent via compliance_growth modifier ---
+		set_temp_variable = { occ_B3 = 0 }
+
+		# Positive side: high compliance_growth → near 0x additive, low → OCC_B3_POS_MAX additive
+		if = {
+			limit = { check_variable = { modifier@compliance_growth > 0 } }
+			set_temp_variable = { occ_B3_pos_raw = modifier@compliance_growth }
+			set_temp_variable = { occ_B3_pos_denom = occ_B3_pos_raw }
+			add_to_temp_variable = { occ_B3_pos_denom = occ_B3_pos_halfsat }
+			set_temp_variable = { occ_B3 = occ_B3_pos_raw }
+			divide_temp_variable = { occ_B3 = occ_B3_pos_denom }
+			set_temp_variable = { occ_B3_inv = 1 }
+			subtract_from_temp_variable = { occ_B3_inv = occ_B3 }
+			set_temp_variable = { occ_B3 = occ_B3_inv }
+			multiply_temp_variable = { occ_B3 = occ_B3_pos_max }
+		}
+
+		# Negative side: deep negative compliance_growth → up to OCC_B3_NEG_FLOOR + OCC_B3_NEG_MAX additive
+		if = {
+			limit = { check_variable = { modifier@compliance_growth < 0 } }
+			set_temp_variable = { occ_B3_neg_raw = modifier@compliance_growth }
+			multiply_temp_variable = { occ_B3_neg_raw = -1 }
+			set_temp_variable = { occ_B3_neg_denom = occ_B3_neg_raw }
+			add_to_temp_variable = { occ_B3_neg_denom = occ_B3_neg_halfsat }
+			set_temp_variable = { occ_B3 = occ_B3_neg_raw }
+			divide_temp_variable = { occ_B3 = occ_B3_neg_denom }
+			multiply_temp_variable = { occ_B3 = occ_B3_neg_max }
+			add_to_temp_variable = { occ_B3 = occ_B3_neg_floor }
+		}
+
+		# --- Combine B ---
+		set_temp_variable = { occ_B = occ_B1 }
+		add_to_temp_variable = { occ_B = occ_B2 }
+		add_to_temp_variable = { occ_B = occ_B3 }
+
+		# ===================================================================
+		# STEP 4: COMPLIANCE DAMPENER
+		# High compliance = population submitting = fewer provocations,
+		# less reprisal frequency, better food/supply distribution.
+		# 0% compliance   → 1.0x (no dampening)
+		# 100% compliance → (1.0 - OCC_COMPLIANCE_DAMP_STRENGTH)x
+		# ===================================================================
+		set_temp_variable = { occ_compliance_damp = compliance }
+		divide_temp_variable = { occ_compliance_damp = 100 }
+		multiply_temp_variable = { occ_compliance_damp = occ_compliance_damp_strength }
+		multiply_temp_variable = { occ_compliance_damp = -1 }
+		add_to_temp_variable = { occ_compliance_damp = 1.0 }
+
+		# ===================================================================
+		# STEP 5: COMBINE A + B + DAMPENER
+		# A and B blended by OCC_AB_WEIGHT then compliance dampener applied.
+		# ===================================================================
+		set_temp_variable = { occ_B_weight = 1 }
+		subtract_from_temp_variable = { occ_B_weight = occ_ab_weight }
+
+		set_temp_variable = { occ_combined = occ_A }
+		multiply_temp_variable = { occ_combined = occ_ab_weight }
+		set_temp_variable = { occ_B_weighted = occ_B }
+		multiply_temp_variable = { occ_B_weighted = occ_B_weight }
+		add_to_temp_variable = { occ_combined = occ_B_weighted }
+		multiply_temp_variable = { occ_combined = occ_compliance_damp }
+
+		multiply_temp_variable = { occupation_death_base = occ_combined }
+
+		# ===================================================================
+		# STEP 6: Devastation multiplier (destroyed areas = disease, starvation, chaos)
+		# devastation ranges 0-100, scaled to 1.0x - 4.0x multiplier
+		# ===================================================================
 		set_temp_variable = { devastation_factor = state_devastation_value }
-		divide_temp_variable = { devastation_factor = 100 }  # Normalize to 0.0-1.0
-		multiply_temp_variable = { devastation_factor = 3 }   # Scale to 0.0-3.0
-		add_to_temp_variable = { devastation_factor = 1 }     # Make it 1.0-4.0x multiplier
-		
+		divide_temp_variable = { devastation_factor = 100 }
+		multiply_temp_variable = { devastation_factor = 3 }
+		add_to_temp_variable = { devastation_factor = 1 }
+
 		multiply_temp_variable = { occupation_death_base = devastation_factor }
-		
-		# STEP 4: State category factor (urban = easier to control/kill, rural = harder to find people)
+
+		# ===================================================================
+		# STEP 7: State category factor
+		# Urban = dense, easier to round up. Rural = dispersed, harder to find.
+		# ===================================================================
 		set_temp_variable = { state_category_factor = 1.0 }
-		
-		if = { limit = { is_megalopolis_state = yes } set_temp_variable = { state_category_factor = 1.8 } }  # Dense population, easy to round up
+
+		if = { limit = { is_megalopolis_state = yes } set_temp_variable = { state_category_factor = 1.8 } }
 		else_if = { limit = { is_metropolis_state = yes } set_temp_variable = { state_category_factor = 1.5 } }
 		else_if = { limit = { is_large_city_state = yes } set_temp_variable = { state_category_factor = 1.3 } }
-		else_if = { limit = { is_city_state = yes } set_temp_variable = { state_category_factor = 1.0 } }  # Baseline
+		else_if = { limit = { is_city_state = yes } set_temp_variable = { state_category_factor = 1.0 } }
 		else_if = { limit = { is_large_town_state = yes } set_temp_variable = { state_category_factor = 0.85 } }
 		else_if = { limit = { is_town_state = yes } set_temp_variable = { state_category_factor = 0.70 } }
-		else_if = { limit = { is_rural_state = yes } set_temp_variable = { state_category_factor = 0.50 } }  # Harder to find people
-		else_if = { limit = { is_pastoral_state = yes } set_temp_variable = { state_category_factor = 0.30 } }  # Very spread out
-		else_if = { limit = { is_wasteland_state = yes } set_temp_variable = { state_category_factor = 0.15 } }  # Almost nobody there
-		
+		else_if = { limit = { is_rural_state = yes } set_temp_variable = { state_category_factor = 0.50 } }
+		else_if = { limit = { is_pastoral_state = yes } set_temp_variable = { state_category_factor = 0.30 } }
+		else_if = { limit = { is_wasteland_state = yes } set_temp_variable = { state_category_factor = 0.15 } }
+
 		multiply_temp_variable = { occupation_death_base = state_category_factor }
-		
-		# STEP 5: Occupation law multiplier
-		set_temp_variable = { occupation_casualty_factor = 1.0 }
-
-		### VERY HARSH / OPPRESSIVE (high civilian death, deportations, executions)
-		if = { limit = { occupation_law = brutally_oppressive_occupation } set_temp_variable = { occupation_casualty_factor = 6.0 } }  # Nazi Poland / Belarus / Yugoslavia-level brutality
-		if = { limit = { occupation_law = forced_labor_occupation } set_temp_variable = { occupation_casualty_factor = 4.5 } }       # Widespread deportations, starvation, but not extermination policy
-		if = { limit = { occupation_law = harsh_quotas_occupation } set_temp_variable = { occupation_casualty_factor = 3.0 } }        # Harsh exploitation (Ukraine 1942, China 1939)
-		if = { limit = { occupation_law = martial_law_occupation } set_temp_variable = { occupation_casualty_factor = 1.75 } }        # Curfews, shootings of partisans; Italy 1944-level
-
-		### MILITARY / STRONG CONTROL (moderate casualties, pragmatic governance)
-		if = { limit = { occupation_law = military_governor_occupation } set_temp_variable = { occupation_casualty_factor = 1.0 } }   # Baseline case
-		if = { limit = { occupation_law = secret_police_oversight } set_temp_variable = { occupation_casualty_factor = 0.85 } }        # Gestapo/NKVD-style repression
-
-		### LENIENT / SEMI-AUTONOMOUS (low casualties, collaborationist governments)
-		if = { limit = { occupation_law = autonomous_occupation } set_temp_variable = { occupation_casualty_factor = 0.6 } }          # Vichy-like arrangement
-		if = { limit = { occupation_law = foreign_civilian_oversight } set_temp_variable = { occupation_casualty_factor = 0.45 } }    # Allied military govt in Germany 1945–49
-		if = { limit = { occupation_law = reconciliation } set_temp_variable = { occupation_casualty_factor = 0.35 } }                 # Japan's occupation of Taiwan 1920s-30s
-		if = { limit = { occupation_law = independent_rule } set_temp_variable = { occupation_casualty_factor = 0.3 } }                # Puppet regimes (Manchukuo, Burma)
-		if = { limit = { occupation_law = local_police_force_garrison } set_temp_variable = { occupation_casualty_factor = 0.8 } }    # Indigenous repression—low stability, still bloody
-		if = { limit = { occupation_law = liberate_workers_occupation } set_temp_variable = { occupation_casualty_factor = 0.7 } }    # "Red liberation" with purges, limited but real death tolls
-		if = { limit = { occupation_law = integration_occupation } set_temp_variable = { occupation_casualty_factor = 0.5 } }         # Post-annexation assimilation (Alsace-Lorraine, 1941 Croatia)
-
-		### COLONIAL / EXPLOITATIVE (chronic but lower-intensity deaths)
-		if = { limit = { occupation_law = colonial_police } set_temp_variable = { occupation_casualty_factor = 1.5 } }                 # Everyday brutality (Congo Free State–style)
-		if = { limit = { occupation_law = colonial_police_improved } set_temp_variable = { occupation_casualty_factor = 1.2 } }        # Late colonial reforms, still repressive
-		if = { limit = { occupation_law = colonial_police_final } set_temp_variable = { occupation_casualty_factor = 1.0 } }           # Quasi-postcolonial administration
-		if = { limit = { occupation_law = secretaries_general } set_temp_variable = { occupation_casualty_factor = 1.0 } }             # Semi-autonomous governorates
-
-		### EXPLOIT BUT BUILD / SPECIAL CASES
-		if = { limit = { occupation_law = princely_subjugation } set_temp_variable = { occupation_casualty_factor = 0.7 } }            # Puppet monarchies—moderate coercion, limited bloodshed
-
-		### NO GARRISON (chaos, but decentralized violence)
-		if = { limit = { occupation_law = no_garrison } set_temp_variable = { occupation_casualty_factor = 0.3 } }    
-		
-		multiply_temp_variable = { occupation_death_base = occupation_casualty_factor }
 
 		# STEP 6: Apply warfare conduct civilian multiplier
 		# Set by bm_conduct_* decisions. Default 1.0 (Standard).
@@ -3576,7 +3699,7 @@ devastation_state_calc_value = {
 		generate_random_casualties = yes
 		
 		# Optional: Log for debugging (uncomment to test)
-		# log = "[THIS.GetName]: Occupation deaths - Pop:[?state_population_k]k, Resist:[?resistance]%, Dev:[?state_devastation_value]%, Deaths:[?temp_min]-[?temp_max]/week"
+		# log = "[THIS.GetName]: OCC DEATHS - Pop:[?state_population_k]k Resist:[?resistance]% Compliance:[?compliance]% | A:[?occ_A] B1:[?occ_B1] B2:[?occ_B2] B3:[?occ_B3] Combined:[?occ_combined] | Deaths:[?temp_min]-[?temp_max]/week"
 	}
 
 	calc_pop_change = yes
