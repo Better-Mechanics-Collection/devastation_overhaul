@@ -40,7 +40,10 @@ neighbor_state_has_direct_war = {
 }
 
 has_recently_experienced_strat_bombing = {
-	days_since_last_strategic_bombing < 2
+	OR = {
+		check_variable = { state_bombed_days_this_week > 0 }
+		days_since_last_strategic_bombing < 8
+	}
 }
 
 can_migrate_to_neighboring_state = {

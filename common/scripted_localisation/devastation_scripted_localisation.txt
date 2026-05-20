@@ -83,6 +83,7 @@ defined_text = {
 		trigger = {
 			neighbor_state_has_direct_war = yes
 			state_isnt_fully_controlled_owner = no
+			check_variable = { state_devastation_value < 36 }
 		}
 		localization_key = SDFactors4Key
 	}
@@ -141,6 +142,19 @@ defined_text = {
 			state_is_besieged = yes
 		}
 		localization_key = SDFactors10Key
+	}
+}
+
+defined_text = { 
+	name = SDFactors13
+	text = {
+		trigger = {
+			OR = {
+				check_variable = { state_devastation_heavy_combat_gain > 0 }
+				check_variable = { state_devastation_frontline_gain > 0 }
+			}
+		}
+		localization_key = SDFactors13Key
 	}
 }
 

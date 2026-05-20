@@ -3242,12 +3242,309 @@ calc_total_factory_migration = {
 	subtract_from_variable = { devastation_state_mil_effective_gain = devastation_state_mil_lost }
 }
 
+devastation_state_calc_combat_intensity = {
+	# COMBAT INTENSITY TUNING KNOBS
+	# Division density is deliberately moderate; destructive equipment is the main driver.
+	# Exact battalion counts are not exposed here, so each category is scored by presence per division.
+	set_variable = { state_combat_divisions_all = 0 }
+	set_variable = { state_combat_destructive_score = 0 }
+	set_variable = { state_combat_density_mult = 1.00 }
+	set_variable = { state_combat_destructive_mult = 1.00 }
+	set_variable = { state_combat_intensity_mult = 1.00 }
+	
+	every_state_division = {
+		limit = {
+			OWNER = { has_war = yes }
+		}
+		
+		add_to_variable = { PREV.state_combat_divisions_all = 1 }
+		
+		if = {
+			limit = {
+				OR = {
+					division_has_battalion_in_template = artillery
+					division_has_battalion_in_template = rocket_artillery
+				}
+			}
+			add_to_variable = { PREV.state_combat_destructive_score = 0.04 }
+		}
+		
+		if = {
+			limit = {
+				OR = {
+					division_has_battalion_in_template = artillery_brigade
+					division_has_battalion_in_template = rocket_artillery_brigade
+				}
+			}
+			add_to_variable = { PREV.state_combat_destructive_score = 0.14 }
+		}
+		
+		if = {
+			limit = {
+				OR = {
+					division_has_battalion_in_template = mot_artillery_brigade
+					division_has_battalion_in_template = motorized_rocket_brigade
+				}
+			}
+			add_to_variable = { PREV.state_combat_destructive_score = 0.16 }
+		}
+		
+		if = {
+			limit = {
+				OR = {
+					division_has_battalion_in_template = light_sp_artillery_brigade
+					division_has_battalion_in_template = medium_sp_artillery_brigade
+					division_has_battalion_in_template = heavy_sp_artillery_brigade
+					division_has_battalion_in_template = modern_sp_artillery_brigade
+					division_has_battalion_in_template = super_heavy_sp_artillery_brigade
+					division_has_battalion_in_template = self_propelled_super_heavy_artillery
+					division_has_battalion_in_template = super_heavy_artillery
+					division_has_battalion_in_template = railway_gun
+				}
+			}
+			add_to_variable = { PREV.state_combat_destructive_score = 0.22 }
+		}
+		
+		if = {
+			limit = {
+				OR = {
+					division_has_battalion_in_template = light_armor
+					division_has_battalion_in_template = armored_car
+					division_has_battalion_in_template = armored_car_recon
+					division_has_battalion_in_template = light_tank_recon
+				}
+			}
+			add_to_variable = { PREV.state_combat_destructive_score = 0.04 }
+		}
+		
+		if = {
+			limit = {
+				OR = {
+					division_has_battalion_in_template = medium_armor
+					division_has_battalion_in_template = amphibious_armor
+					division_has_battalion_in_template = amphibious_light_armor
+					division_has_battalion_in_template = amphibious_medium_armor
+					division_has_battalion_in_template = amphibious_mechanized
+					division_has_battalion_in_template = mechanized
+				}
+			}
+			add_to_variable = { PREV.state_combat_destructive_score = 0.07 }
+		}
+		
+		if = {
+			limit = {
+				OR = {
+					division_has_battalion_in_template = heavy_armor
+					division_has_battalion_in_template = modern_armor
+					division_has_battalion_in_template = super_heavy_armor
+					division_has_battalion_in_template = land_cruiser
+				}
+			}
+			add_to_variable = { PREV.state_combat_destructive_score = 0.10 }
+		}
+		
+		if = {
+			limit = {
+				OR = {
+					division_has_battalion_in_template = anti_tank
+					division_has_battalion_in_template = anti_tank_brigade
+					division_has_battalion_in_template = mot_anti_tank_brigade
+					division_has_battalion_in_template = light_tank_destroyer_brigade
+					division_has_battalion_in_template = medium_tank_destroyer_brigade
+					division_has_battalion_in_template = heavy_tank_destroyer_brigade
+					division_has_battalion_in_template = modern_tank_destroyer_brigade
+					division_has_battalion_in_template = super_heavy_tank_destroyer_brigade
+					division_has_battalion_in_template = anti_air
+					division_has_battalion_in_template = anti_air_brigade
+					division_has_battalion_in_template = mot_anti_air_brigade
+					division_has_battalion_in_template = light_sp_anti_air_brigade
+					division_has_battalion_in_template = medium_sp_anti_air_brigade
+					division_has_battalion_in_template = heavy_sp_anti_air_brigade
+					division_has_battalion_in_template = modern_sp_anti_air_brigade
+					division_has_battalion_in_template = super_heavy_sp_anti_air_brigade
+				}
+			}
+			add_to_variable = { PREV.state_combat_destructive_score = 0.04 }
+		}
+		
+		if = {
+			limit = {
+				OR = {
+					division_has_battalion_in_template = engineer
+					division_has_battalion_in_template = assault_engineer
+					division_has_battalion_in_template = armored_engineer
+					division_has_battalion_in_template = light_flame_tank
+					division_has_battalion_in_template = medium_flame_tank
+					division_has_battalion_in_template = heavy_flame_tank
+				}
+			}
+			add_to_variable = { PREV.state_combat_destructive_score = 0.08 }
+		}
+	}
+	
+	if = { limit = { check_variable = { state_combat_divisions_all > 0 } } set_variable = { state_combat_density_mult = 0.65 } }
+	if = { limit = { check_variable = { state_combat_divisions_all > 3 } } set_variable = { state_combat_density_mult = 0.78 } }
+	if = { limit = { check_variable = { state_combat_divisions_all > 7 } } set_variable = { state_combat_density_mult = 0.88 } }
+	if = { limit = { check_variable = { state_combat_divisions_all > 11 } } set_variable = { state_combat_density_mult = 1.00 } }
+	if = { limit = { check_variable = { state_combat_divisions_all > 17 } } set_variable = { state_combat_density_mult = 1.08 } }
+	if = { limit = { check_variable = { state_combat_divisions_all > 25 } } set_variable = { state_combat_density_mult = 1.18 } }
+	if = { limit = { check_variable = { state_combat_divisions_all > 35 } } set_variable = { state_combat_density_mult = 1.30 } }
+	if = { limit = { check_variable = { state_combat_divisions_all > 49 } } set_variable = { state_combat_density_mult = 1.45 } }
+	if = { limit = { check_variable = { state_combat_divisions_all > 69 } } set_variable = { state_combat_density_mult = 1.60 } }
+	if = { limit = { check_variable = { state_combat_divisions_all > 94 } } set_variable = { state_combat_density_mult = 1.78 } }
+	if = { limit = { check_variable = { state_combat_divisions_all > 129 } } set_variable = { state_combat_density_mult = 1.95 } }
+	
+	if = { limit = { check_variable = { state_combat_destructive_score > 0.999 } } set_variable = { state_combat_destructive_mult = 1.10 } }
+	if = { limit = { check_variable = { state_combat_destructive_score > 2.999 } } set_variable = { state_combat_destructive_mult = 1.25 } }
+	if = { limit = { check_variable = { state_combat_destructive_score > 5.999 } } set_variable = { state_combat_destructive_mult = 1.45 } }
+	if = { limit = { check_variable = { state_combat_destructive_score > 9.999 } } set_variable = { state_combat_destructive_mult = 1.70 } }
+	if = { limit = { check_variable = { state_combat_destructive_score > 14.999 } } set_variable = { state_combat_destructive_mult = 2.00 } }
+	if = { limit = { check_variable = { state_combat_destructive_score > 21.999 } } set_variable = { state_combat_destructive_mult = 2.35 } }
+	if = { limit = { check_variable = { state_combat_destructive_score > 29.999 } } set_variable = { state_combat_destructive_mult = 2.75 } }
+	
+	set_temp_variable = { combat_intensity_product = state_combat_density_mult }
+	multiply_temp_variable = { combat_intensity_product = state_combat_destructive_mult }
+	set_variable = { state_combat_intensity_mult = combat_intensity_product }
+}
+
+devastation_state_calc_bombing_intensity = {
+	# STRATEGIC BOMBING TUNING KNOBS
+	# Building damage is the best state-level proxy for raid intensity. Infrastructure
+	# is weighted high because it also stands in for villages, roads, rail hubs, and
+	# civilian disruption that HOI4 does not expose as separate bombing targets.
+	set_temp_variable = { bombing_score = 0 }
+	
+	set_temp_variable = { bombing_score_piece = damaged_building_level@infrastructure }
+	multiply_temp_variable = { bombing_score_piece = 0.95 }
+	add_to_temp_variable = { bombing_score = bombing_score_piece }
+	
+	set_temp_variable = { bombing_score_piece = damaged_building_level@industrial_complex }
+	multiply_temp_variable = { bombing_score_piece = 1.25 }
+	add_to_temp_variable = { bombing_score = bombing_score_piece }
+	
+	set_temp_variable = { bombing_score_piece = damaged_building_level@arms_factory }
+	multiply_temp_variable = { bombing_score_piece = 1.25 }
+	add_to_temp_variable = { bombing_score = bombing_score_piece }
+	
+	set_temp_variable = { bombing_score_piece = damaged_building_level@dockyard }
+	multiply_temp_variable = { bombing_score_piece = 1.10 }
+	add_to_temp_variable = { bombing_score = bombing_score_piece }
+	
+	set_temp_variable = { bombing_score_piece = damaged_building_level@synthetic_refinery }
+	multiply_temp_variable = { bombing_score_piece = 1.15 }
+	add_to_temp_variable = { bombing_score = bombing_score_piece }
+	
+	set_temp_variable = { bombing_score_piece = damaged_building_level@air_base }
+	multiply_temp_variable = { bombing_score_piece = 0.65 }
+	add_to_temp_variable = { bombing_score = bombing_score_piece }
+	
+	set_temp_variable = { bombing_score_piece = damaged_building_level@anti_air_building }
+	multiply_temp_variable = { bombing_score_piece = 0.45 }
+	add_to_temp_variable = { bombing_score = bombing_score_piece }
+	
+	set_temp_variable = { bombing_score_piece = damaged_building_level@radar_station }
+	multiply_temp_variable = { bombing_score_piece = 0.35 }
+	add_to_temp_variable = { bombing_score = bombing_score_piece }
+	
+	set_temp_variable = { bombing_score_piece = damaged_building_level@fuel_silo }
+	multiply_temp_variable = { bombing_score_piece = 0.65 }
+	add_to_temp_variable = { bombing_score = bombing_score_piece }
+	
+	set_variable = { state_bomb_damage_score = bombing_score }
+	
+	if = {
+		limit = { NOT = { has_variable = state_bomb_damage_tracker_initialized } }
+		set_variable = { state_bomb_damage_score_last = state_bomb_damage_score }
+		set_variable = { state_bomb_damage_tracker_initialized = 1 }
+	}
+	
+	set_variable = { state_bomb_damage_delta = state_bomb_damage_score }
+	subtract_from_variable = { state_bomb_damage_delta = state_bomb_damage_score_last }
+	clamp_variable = { var = state_bomb_damage_delta min = 0 }
+	
+	set_variable = { state_bomb_civilian_proxy_mult = 1.00 }
+	if = { limit = { is_megalopolis_state = yes } set_variable = { state_bomb_civilian_proxy_mult = 1.35 } }
+	if = { limit = { is_metropolis_state = yes } set_variable = { state_bomb_civilian_proxy_mult = 1.25 } }
+	if = { limit = { is_large_city_state = yes } set_variable = { state_bomb_civilian_proxy_mult = 1.18 } }
+	if = { limit = { is_city_state = yes } set_variable = { state_bomb_civilian_proxy_mult = 1.10 } }
+	if = { limit = { is_large_town_state = yes } set_variable = { state_bomb_civilian_proxy_mult = 1.05 } }
+	if = { limit = { is_town_state = yes } set_variable = { state_bomb_civilian_proxy_mult = 1.00 } }
+	if = { limit = { is_rural_state = yes } set_variable = { state_bomb_civilian_proxy_mult = 0.90 } }
+	if = { limit = { is_pastoral_state = yes } set_variable = { state_bomb_civilian_proxy_mult = 0.80 } }
+	if = { limit = { is_wasteland_state = yes } set_variable = { state_bomb_civilian_proxy_mult = 0.80 } }
+	
+	if = { limit = { check_variable = { state_population_k > 300 } } add_to_variable = { state_bomb_civilian_proxy_mult = 0.05 } }
+	if = { limit = { check_variable = { state_population_k > 1000 } } add_to_variable = { state_bomb_civilian_proxy_mult = 0.05 } }
+	if = { limit = { check_variable = { state_population_k > 3000 } } add_to_variable = { state_bomb_civilian_proxy_mult = 0.05 } }
+	if = { limit = { check_variable = { state_population_k < 50 } } add_to_variable = { state_bomb_civilian_proxy_mult = -0.10 } }
+	clamp_variable = { var = state_bomb_civilian_proxy_mult min = 0.70 max = 1.50 }
+	
+	set_temp_variable = { bombing_delta_adjusted = state_bomb_damage_delta }
+	multiply_temp_variable = { bombing_delta_adjusted = state_bomb_civilian_proxy_mult }
+	set_variable = { state_bomb_damage_delta_adjusted = bombing_delta_adjusted }
+	
+	set_variable = { state_bombed_days_last_week = state_bombed_days_this_week }
+	clamp_variable = { var = state_bombed_days_last_week min = 0 max = 7 }
+	
+	set_variable = { state_bombing_days_mult = 0.35 }
+	if = { limit = { check_variable = { state_bombed_days_last_week > 0 } } set_variable = { state_bombing_days_mult = 0.50 } }
+	if = { limit = { check_variable = { state_bombed_days_last_week > 1 } } set_variable = { state_bombing_days_mult = 0.70 } }
+	if = { limit = { check_variable = { state_bombed_days_last_week > 2 } } set_variable = { state_bombing_days_mult = 0.90 } }
+	if = { limit = { check_variable = { state_bombed_days_last_week > 3 } } set_variable = { state_bombing_days_mult = 1.00 } }
+	if = { limit = { check_variable = { state_bombed_days_last_week > 4 } } set_variable = { state_bombing_days_mult = 1.15 } }
+	if = { limit = { check_variable = { state_bombed_days_last_week > 5 } } set_variable = { state_bombing_days_mult = 1.30 } }
+	if = { limit = { check_variable = { state_bombed_days_last_week > 6 } } set_variable = { state_bombing_days_mult = 1.45 } }
+	
+	set_temp_variable = { bombing_delta_duration_adjusted = state_bomb_damage_delta_adjusted }
+	multiply_temp_variable = { bombing_delta_duration_adjusted = state_bombing_days_mult }
+	set_variable = { state_bomb_damage_delta_duration_adjusted = bombing_delta_duration_adjusted }
+	
+	set_variable = { state_bombing_intensity_mult = 0.25 }
+	if = { limit = { check_variable = { state_bomb_damage_delta_duration_adjusted > 0 } } set_variable = { state_bombing_intensity_mult = 0.55 } }
+	if = { limit = { check_variable = { state_bomb_damage_delta_duration_adjusted > 0.24 } } set_variable = { state_bombing_intensity_mult = 0.80 } }
+	if = { limit = { check_variable = { state_bomb_damage_delta_duration_adjusted > 0.74 } } set_variable = { state_bombing_intensity_mult = 1.05 } }
+	if = { limit = { check_variable = { state_bomb_damage_delta_duration_adjusted > 1.49 } } set_variable = { state_bombing_intensity_mult = 1.35 } }
+	if = { limit = { check_variable = { state_bomb_damage_delta_duration_adjusted > 2.99 } } set_variable = { state_bombing_intensity_mult = 1.70 } }
+	if = { limit = { check_variable = { state_bomb_damage_delta_duration_adjusted > 4.99 } } set_variable = { state_bombing_intensity_mult = 2.10 } }
+	if = { limit = { check_variable = { state_bomb_damage_delta_duration_adjusted > 7.49 } } set_variable = { state_bombing_intensity_mult = 2.55 } }
+	if = { limit = { check_variable = { state_bomb_damage_delta_duration_adjusted > 9.99 } } set_variable = { state_bombing_intensity_mult = 3.00 } }
+	if = { limit = { check_variable = { state_bomb_damage_delta_duration_adjusted > 14.99 } } set_variable = { state_bombing_intensity_mult = 3.50 } }
+	
+	set_temp_variable = { bombing_gain = global.devastation_base_gain_experienced_bombing }
+	multiply_temp_variable = { bombing_gain = state_bombing_intensity_mult }
+	set_variable = { state_devastation_bombing_gain = bombing_gain }
+	
+	set_variable = { state_bomb_damage_score_last = state_bomb_damage_score }
+	set_variable = { state_bombed_days_this_week = 0 }
+}
+
 devastation_state_calc_value = {
 	calc_pop_change = yes
 	set_variable = { state_devastation_previous_value = state_devastation_value }
 	#log = "[THIS.GetName] State Devastation Previous Value: [?state_devastation_previous_value]"
 	
 	set_temp_variable = { base_gain = 0 }
+	set_temp_variable = { active_combat_gain = 0 }
+	set_temp_variable = { frontline_skirmish_gain = 0 }
+	set_temp_variable = { siege_gain = 0 }
+	set_temp_variable = { bombing_gain = 0 }
+	set_variable = { state_devastation_heavy_combat_gain = 0 }
+	set_variable = { state_devastation_frontline_gain = 0 }
+	set_variable = { state_devastation_siege_gain = 0 }
+	set_variable = { state_devastation_bombing_gain = 0 }
+	set_variable = { state_bomb_damage_delta = 0 }
+	set_variable = { state_bomb_damage_delta_adjusted = 0 }
+	set_variable = { state_bomb_damage_delta_duration_adjusted = 0 }
+	set_variable = { state_bombing_days_mult = 1.00 }
+	set_variable = { state_bomb_civilian_proxy_mult = 1.00 }
+	set_variable = { state_bombing_intensity_mult = 1.00 }
+	set_variable = { state_combat_divisions_all = 0 }
+	set_variable = { state_combat_destructive_score = 0 }
+	set_variable = { state_combat_density_mult = 1.00 }
+	set_variable = { state_combat_destructive_mult = 1.00 }
+	set_variable = { state_combat_intensity_mult = 1.00 }
+	
+	devastation_state_calc_bombing_intensity = yes
 	
 	set_variable = { max_resistance_state_cap = resistance }
 	multiply_variable = { max_resistance_state_cap = 0.5 }
@@ -3308,7 +3605,7 @@ devastation_state_calc_value = {
 				state_isnt_fully_controlled_owner = yes
 				check_variable = { state_devastation_value < 91 }
 			}
-			add_to_temp_variable = { base_gain = global.devastation_base_gain_partial_occupation }
+			add_to_temp_variable = { active_combat_gain = global.devastation_base_gain_partial_occupation }
 		}
 
 		# Combat bubble
@@ -3318,7 +3615,7 @@ devastation_state_calc_value = {
 				state_isnt_fully_controlled_owner = yes
 				check_variable = { state_devastation_value < 51 }
 			}
-			add_to_temp_variable = { base_gain = global.devastation_base_gain_partial_occupation }
+			add_to_temp_variable = { active_combat_gain = global.devastation_base_gain_partial_occupation }
 		}
 		
 		if = {
@@ -3327,7 +3624,7 @@ devastation_state_calc_value = {
 				state_isnt_fully_controlled_owner = no
 				check_variable = { state_devastation_value < 36 }
 			}
-			add_to_temp_variable = { base_gain = global.devastation_base_gain_neighbor_state_is_enemy }
+			add_to_temp_variable = { frontline_skirmish_gain = global.devastation_base_gain_neighbor_state_is_enemy }
 			#log = "[THIS.GetName] Global|Neighbor state is enemy: [?global.devastation_base_gain_neighbor_state_is_enemy] -> Base Gain: [?base_gain]"
 		}
 	#}
@@ -3336,7 +3633,8 @@ devastation_state_calc_value = {
 		limit = {
 			has_recently_experienced_strat_bombing = yes
 		}
-		add_to_temp_variable = { base_gain = global.devastation_base_gain_experienced_bombing }
+		set_temp_variable = { bombing_gain = state_devastation_bombing_gain }
+		add_to_temp_variable = { base_gain = bombing_gain }
 		#log = "[THIS.GetName] Global|Bombing: [?global.devastation_base_gain_controller_at_war_with_owner] -> Base Gain: [?base_gain]"
 		
 		#set_temp_variable = { temp_min = 250 }		# Original 50
@@ -3350,8 +3648,36 @@ devastation_state_calc_value = {
 	if = {
 		limit = { state_is_besieged = yes }
     
-		add_to_temp_variable = { base_gain = global.devastation_base_gain_siege }  # +2.5% devastation per week
+		add_to_temp_variable = { siege_gain = global.devastation_base_gain_siege }
 	}
+	
+	if = {
+		limit = {
+			OR = {
+				check_variable = { active_combat_gain > 0 }
+				check_variable = { frontline_skirmish_gain > 0 }
+			}
+		}
+		
+		devastation_state_calc_combat_intensity = yes
+		
+		# Source caps. Keep these close to the source scaling so they are easy to retune.
+		set_temp_variable = { combat_source_mult = state_combat_intensity_mult }
+		clamp_temp_variable = { var = combat_source_mult min = 0.70 max = 3.00 }
+		multiply_temp_variable = { active_combat_gain = combat_source_mult }
+		set_variable = { state_devastation_heavy_combat_gain = active_combat_gain }
+		
+		set_temp_variable = { combat_source_mult = state_combat_intensity_mult }
+		clamp_temp_variable = { var = combat_source_mult min = 0.70 max = 1.65 }
+		multiply_temp_variable = { frontline_skirmish_gain = combat_source_mult }
+		set_variable = { state_devastation_frontline_gain = frontline_skirmish_gain }
+	}
+	
+	set_variable = { state_devastation_siege_gain = siege_gain }
+	
+	add_to_temp_variable = { base_gain = active_combat_gain }
+	add_to_temp_variable = { base_gain = frontline_skirmish_gain }
+	add_to_temp_variable = { base_gain = siege_gain }
 	
 	set_temp_variable = { base_loss = 0 }
 	#log = "[THIS.GetName] Base Loss: [?base_loss]"

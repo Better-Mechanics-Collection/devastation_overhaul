@@ -10,11 +10,12 @@ on_actions = {
 				# casualties_k is HOI4's native variable — resets to 0 on war end.
 				# casualties_calculated_deaths_k tracks the last known value.
 				# Each week we compute the delta (new casualties since last tick),
-				# remove that manpower from states proportionally, and accumulate
-				# 30% of the delta into persistent_mil_casualties_k (actual deaths).
+				# remove the fatal share from states proportionally, and accumulate
+				# the same fatal share into persistent_mil_casualties_k.
 				#
-				# 30% KIA rate: historically ~25-30% of casualties are deaths.
-				# The remaining 70% are wounded/captured (handled by HOI4 recovery).
+				# The death rate varies with national collapse pressure, devastation,
+				# war support, and stability. The rest are wounded/captured/recovered
+				# inside HOI4's normal casualty abstraction.
 				#
 				# persistent_mil_casualties_k: never resets, survives war end.
 				# This is what the casualty table military column displays.
@@ -32,18 +33,31 @@ on_actions = {
 					# Catch up tracker
 					add_to_variable = { casualties_calculated_deaths_k = casualties_civs_to_be_removed_k }
 					
-					# 30% of casualties = actual deaths distributed to state populations
 					# Wounded recover and return — only the dead permanently reduce population
+					# Variable casualty-to-death rate. Keep the numeric knobs here for tuning.
+					set_variable_to_random = { var = mil_death_rate min = 0.22 max = 0.34 }
+					if = { limit = { surrender_progress > 0.15 } add_to_variable = { mil_death_rate = 0.03 } }
+					if = { limit = { surrender_progress > 0.35 } add_to_variable = { mil_death_rate = 0.04 } }
+					if = { limit = { surrender_progress > 0.60 } add_to_variable = { mil_death_rate = 0.05 } }
+					if = { limit = { check_variable = { country_devastation_value > 20 } } add_to_variable = { mil_death_rate = 0.02 } }
+					if = { limit = { check_variable = { country_devastation_value > 40 } } add_to_variable = { mil_death_rate = 0.02 } }
+					if = { limit = { check_variable = { country_devastation_value > 65 } } add_to_variable = { mil_death_rate = 0.02 } }
+					if = { limit = { has_war_support < 0.35 } add_to_variable = { mil_death_rate = 0.03 } }
+					if = { limit = { has_stability < 0.35 } add_to_variable = { mil_death_rate = 0.03 } }
+					clamp_variable = { var = mil_death_rate min = 0.18 max = 0.55 }
+					set_variable = { last_military_death_rate = mil_death_rate }
+					
 					set_variable = { casualties_civs_to_be_removed = casualties_civs_to_be_removed_k }
-					multiply_variable = { casualties_civs_to_be_removed = 0.30 }
+					multiply_variable = { casualties_civs_to_be_removed = mil_death_rate }
 					multiply_variable = { casualties_civs_to_be_removed = 1000 }
 					
 					# =====================================================================
 					# PERSISTENT DEATH COUNTER — 30% of casualties = actual deaths
-					# Lower/raise the 0.30 multiplier to adjust the KIA rate.
+					# Uses the same mil_death_rate as population deletion.
 					# =====================================================================
 					set_temp_variable = { mil_deaths_delta = casualties_civs_to_be_removed_k }
-					multiply_temp_variable = { mil_deaths_delta = 0.30 }
+					multiply_temp_variable = { mil_deaths_delta = mil_death_rate }
+					set_variable = { last_military_deaths_delta_k = mil_deaths_delta }
 					add_to_variable = { persistent_mil_casualties_k = mil_deaths_delta }
 					
 					# =====================================================================
