@@ -420,6 +420,13 @@ devastation_country_calc_unassimilated = {
 		clear_variable = country_unassimilated_pops
 		clear_variable = country_core_population_controlled
 		clear_array = country_unassimilated_pops_modifier
+		if = { limit = { NOT = { has_variable = refugee_acceptance_mult } } set_variable = { refugee_acceptance_mult = 1.00 } }
+		if = { limit = { NOT = { has_variable = refugee_capacity_ratio } } set_variable = { refugee_capacity_ratio = 0.20 } }
+		if = { limit = { NOT = { has_variable = refugee_capacity_percent } } set_variable = { refugee_capacity_percent = 20 } }
+		if = { limit = { NOT = { has_variable = refugee_stability_burden_mult } } set_variable = { refugee_stability_burden_mult = 1.00 } }
+		if = { limit = { NOT = { has_variable = refugee_consumer_goods_burden_mult } } set_variable = { refugee_consumer_goods_burden_mult = 0.70 } }
+		if = { limit = { NOT = { has_variable = refugee_assimilation_mult } } set_variable = { refugee_assimilation_mult = 1.00 } }
+		
 		every_controlled_state = {
 			add_to_variable = { PREV.country_unassimilated_pops = devastation_unassimilated_pops }
 			
@@ -466,14 +473,28 @@ devastation_country_calc_unassimilated = {
 			}
 		}
 	
-		set_temp_variable = { temp = global.unassimilated_stability_factor }
-		#log = "global.unassimilated_stability_factor = [?global.unassimilated_stability_factor]"
-		multiply_temp_variable = { temp = 0.1 }
-		#log = "temp = [?temp]"
-		multiply_temp_variable = { temp = country_unassimilated_pops_ratio_core }
-		#log = "temp = [?temp]"
-		add_to_array = { country_unassimilated_pops_modifier = temp }
-		#log = "country_unassimilated_pops_modifier = [?country_unassimilated_pops_modifier^0|%]"
+		set_temp_variable = { refugee_stability_pressure = global.unassimilated_stability_factor }
+		multiply_temp_variable = { refugee_stability_pressure = 0.1 }
+		multiply_temp_variable = { refugee_stability_pressure = country_unassimilated_pops_ratio_core }
+		multiply_temp_variable = { refugee_stability_pressure = refugee_stability_burden_mult }
+		set_variable = { refugee_policy_stability_pressure = refugee_stability_pressure }
+		add_to_array = { country_unassimilated_pops_modifier = refugee_stability_pressure }
+		
+		set_temp_variable = { refugee_consumer_goods_pressure = country_unassimilated_pops_ratio_core }
+		multiply_temp_variable = { refugee_consumer_goods_pressure = 0.006 }
+		multiply_temp_variable = { refugee_consumer_goods_pressure = refugee_consumer_goods_burden_mult }
+		clamp_temp_variable = { var = refugee_consumer_goods_pressure min = 0 max = 0.15 }
+		set_variable = { refugee_policy_consumer_goods_pressure = refugee_consumer_goods_pressure }
+		add_to_array = { country_unassimilated_pops_modifier = refugee_consumer_goods_pressure }
+		
+		set_variable = { refugee_over_capacity_percent = country_unassimilated_pops_ratio_core }
+		subtract_from_variable = { refugee_over_capacity_percent = refugee_capacity_percent }
+		clamp_variable = { var = refugee_over_capacity_percent min = 0 }
+		set_temp_variable = { refugee_political_pressure = refugee_over_capacity_percent }
+		multiply_temp_variable = { refugee_political_pressure = -0.015 }
+		clamp_temp_variable = { var = refugee_political_pressure min = -0.50 max = 0 }
+		set_variable = { refugee_policy_political_pressure = refugee_political_pressure }
+		add_to_array = { country_unassimilated_pops_modifier = refugee_political_pressure }
 	}
 }
 
@@ -481,6 +502,10 @@ assimilate_unassimilated_pops = {
 	#set_temp_variable = { assimilate_unassimilated_pops_min = global.passive_assimilation_min }
 	#set_temp_variable = { assimilate_unassimilated_pops_max = global.passive_assimilation_max }
 	set_temp_variable_to_random = { var = global.temp2 min = assimilate_unassimilated_pops_min max = assimilate_unassimilated_pops_max }
+	if = { limit = { NOT = { has_variable = refugee_assimilation_mult } } set_variable = { refugee_assimilation_mult = 1.00 } }
+	multiply_temp_variable = { global.temp2 = refugee_assimilation_mult }
+	clamp_temp_variable = { var = global.temp2 min = 0 max = 0.50 }
+	
 	
 	set_temp_variable = { country_temp = global.temp2 }
 	multiply_temp_variable = { country_temp = country_unassimilated_pops }
@@ -1293,7 +1318,7 @@ devastation_state_trigger_migration = {
 							distance_to = { value < 8000 target = PREV }
 							NOT = { state = PREV }
 							NOT = { owner = { has_country_flag = bm_refugees_closed } }
-							NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+							owner = { can_receive_refugees_by_policy = yes }
 							owner = { has_stability > 0.45 }
 							}
 							set_temp_variable = { refugee_state_number = 1 }
@@ -1324,7 +1349,7 @@ devastation_state_trigger_migration = {
 							distance_to = { value < 6000 target = PREV }
 							NOT = { state = PREV }
 							NOT = { owner = { has_country_flag = bm_refugees_closed } }
-							NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+							owner = { can_receive_refugees_by_policy = yes }
 							owner = { has_stability > 0.40 }
 							}
 							set_temp_variable = { refugee_state_number = 1 }
@@ -1354,7 +1379,7 @@ devastation_state_trigger_migration = {
 							NOT = { state = PREV }
 							NOT = { owner = { has_country_flag = bm_refugees_closed } }
 							NOT = { owner = { has_country_flag = bm_refugees_discouraging } }
-							NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+							owner = { can_receive_refugees_by_policy = yes }
 							}
 							set_temp_variable = { refugee_state_number = 1 }
 							meta_effect_migrating_refugees = yes
@@ -1500,7 +1525,7 @@ devastation_state_trigger_migration = {
 						distance_to = { value < 8000 target = PREV }
 						NOT = { state = PREV }
 						NOT = { owner = { has_country_flag = bm_refugees_closed } }
-						NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+						owner = { can_receive_refugees_by_policy = yes }
 						owner = { has_stability > 0.45 }
 						}
 						set_temp_variable = { refugee_state_number = 1 }
@@ -1531,7 +1556,7 @@ devastation_state_trigger_migration = {
 						distance_to = { value < 6000 target = PREV }
 						NOT = { state = PREV }
 						NOT = { owner = { has_country_flag = bm_refugees_closed } }
-						NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+						owner = { can_receive_refugees_by_policy = yes }
 						owner = { has_stability > 0.40 }
 						}
 						set_temp_variable = { refugee_state_number = 1 }
@@ -1561,7 +1586,7 @@ devastation_state_trigger_migration = {
 						NOT = { state = PREV }
 						NOT = { owner = { has_country_flag = bm_refugees_closed } }
 						NOT = { owner = { has_country_flag = bm_refugees_discouraging } }
-						NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+						owner = { can_receive_refugees_by_policy = yes }
 						}
 						set_temp_variable = { refugee_state_number = 1 }
 						meta_effect_migrating_refugees = yes
@@ -1713,7 +1738,7 @@ devastation_state_trigger_migration = {
 							distance_to = { value < 8000 target = PREV }
 							NOT = { state = PREV }
 							NOT = { owner = { has_country_flag = bm_refugees_closed } }
-							NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+							owner = { can_receive_refugees_by_policy = yes }
 							owner = { has_stability > 0.45 }
 							}
 							set_temp_variable = { refugee_state_number = 2 }
@@ -1744,7 +1769,7 @@ devastation_state_trigger_migration = {
 							distance_to = { value < 6000 target = PREV }
 							NOT = { state = PREV }
 							NOT = { owner = { has_country_flag = bm_refugees_closed } }
-							NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+							owner = { can_receive_refugees_by_policy = yes }
 							owner = { has_stability > 0.40 }
 							}
 							set_temp_variable = { refugee_state_number = 2 }
@@ -1774,7 +1799,7 @@ devastation_state_trigger_migration = {
 							NOT = { state = PREV }
 							NOT = { owner = { has_country_flag = bm_refugees_closed } }
 							NOT = { owner = { has_country_flag = bm_refugees_discouraging } }
-							NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+							owner = { can_receive_refugees_by_policy = yes }
 							}
 							set_temp_variable = { refugee_state_number = 2 }
 							meta_effect_migrating_refugees = yes
@@ -1920,7 +1945,7 @@ devastation_state_trigger_migration = {
 						distance_to = { value < 8000 target = PREV }
 						NOT = { state = PREV }
 						NOT = { owner = { has_country_flag = bm_refugees_closed } }
-						NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+						owner = { can_receive_refugees_by_policy = yes }
 						owner = { has_stability > 0.45 }
 						}
 						set_temp_variable = { refugee_state_number = 2 }
@@ -1951,7 +1976,7 @@ devastation_state_trigger_migration = {
 						distance_to = { value < 6000 target = PREV }
 						NOT = { state = PREV }
 						NOT = { owner = { has_country_flag = bm_refugees_closed } }
-						NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+						owner = { can_receive_refugees_by_policy = yes }
 						owner = { has_stability > 0.40 }
 						}
 						set_temp_variable = { refugee_state_number = 2 }
@@ -1981,7 +2006,7 @@ devastation_state_trigger_migration = {
 						NOT = { state = PREV }
 						NOT = { owner = { has_country_flag = bm_refugees_closed } }
 						NOT = { owner = { has_country_flag = bm_refugees_discouraging } }
-						NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+						owner = { can_receive_refugees_by_policy = yes }
 						}
 						set_temp_variable = { refugee_state_number = 2 }
 						meta_effect_migrating_refugees = yes
@@ -2133,7 +2158,7 @@ devastation_state_trigger_migration = {
 							distance_to = { value < 8000 target = PREV }
 							NOT = { state = PREV }
 							NOT = { owner = { has_country_flag = bm_refugees_closed } }
-							NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+							owner = { can_receive_refugees_by_policy = yes }
 							owner = { has_stability > 0.45 }
 							}
 							set_temp_variable = { refugee_state_number = 3 }
@@ -2164,7 +2189,7 @@ devastation_state_trigger_migration = {
 							distance_to = { value < 6000 target = PREV }
 							NOT = { state = PREV }
 							NOT = { owner = { has_country_flag = bm_refugees_closed } }
-							NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+							owner = { can_receive_refugees_by_policy = yes }
 							owner = { has_stability > 0.40 }
 							}
 							set_temp_variable = { refugee_state_number = 3 }
@@ -2194,7 +2219,7 @@ devastation_state_trigger_migration = {
 							NOT = { state = PREV }
 							NOT = { owner = { has_country_flag = bm_refugees_closed } }
 							NOT = { owner = { has_country_flag = bm_refugees_discouraging } }
-							NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+							owner = { can_receive_refugees_by_policy = yes }
 							}
 							set_temp_variable = { refugee_state_number = 3 }
 							meta_effect_migrating_refugees = yes
@@ -2340,7 +2365,7 @@ devastation_state_trigger_migration = {
 						distance_to = { value < 8000 target = PREV }
 						NOT = { state = PREV }
 						NOT = { owner = { has_country_flag = bm_refugees_closed } }
-						NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+						owner = { can_receive_refugees_by_policy = yes }
 						owner = { has_stability > 0.45 }
 						}
 						set_temp_variable = { refugee_state_number = 3 }
@@ -2371,7 +2396,7 @@ devastation_state_trigger_migration = {
 						distance_to = { value < 6000 target = PREV }
 						NOT = { state = PREV }
 						NOT = { owner = { has_country_flag = bm_refugees_closed } }
-						NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+						owner = { can_receive_refugees_by_policy = yes }
 						owner = { has_stability > 0.40 }
 						}
 						set_temp_variable = { refugee_state_number = 3 }
@@ -2401,7 +2426,7 @@ devastation_state_trigger_migration = {
 						NOT = { state = PREV }
 						NOT = { owner = { has_country_flag = bm_refugees_closed } }
 						NOT = { owner = { has_country_flag = bm_refugees_discouraging } }
-						NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+						owner = { can_receive_refugees_by_policy = yes }
 						}
 						set_temp_variable = { refugee_state_number = 3 }
 						meta_effect_migrating_refugees = yes
@@ -2553,7 +2578,7 @@ devastation_state_trigger_migration = {
 							distance_to = { value < 8000 target = PREV }
 							NOT = { state = PREV }
 							NOT = { owner = { has_country_flag = bm_refugees_closed } }
-							NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+							owner = { can_receive_refugees_by_policy = yes }
 							owner = { has_stability > 0.45 }
 							}
 							set_temp_variable = { refugee_state_number = 4 }
@@ -2584,7 +2609,7 @@ devastation_state_trigger_migration = {
 							distance_to = { value < 6000 target = PREV }
 							NOT = { state = PREV }
 							NOT = { owner = { has_country_flag = bm_refugees_closed } }
-							NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+							owner = { can_receive_refugees_by_policy = yes }
 							owner = { has_stability > 0.40 }
 							}
 							set_temp_variable = { refugee_state_number = 4 }
@@ -2614,7 +2639,7 @@ devastation_state_trigger_migration = {
 							NOT = { state = PREV }
 							NOT = { owner = { has_country_flag = bm_refugees_closed } }
 							NOT = { owner = { has_country_flag = bm_refugees_discouraging } }
-							NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+							owner = { can_receive_refugees_by_policy = yes }
 							}
 							set_temp_variable = { refugee_state_number = 4 }
 							meta_effect_migrating_refugees = yes
@@ -2760,7 +2785,7 @@ devastation_state_trigger_migration = {
 						distance_to = { value < 8000 target = PREV }
 						NOT = { state = PREV }
 						NOT = { owner = { has_country_flag = bm_refugees_closed } }
-						NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+						owner = { can_receive_refugees_by_policy = yes }
 						owner = { has_stability > 0.45 }
 						}
 						set_temp_variable = { refugee_state_number = 4 }
@@ -2791,7 +2816,7 @@ devastation_state_trigger_migration = {
 						distance_to = { value < 6000 target = PREV }
 						NOT = { state = PREV }
 						NOT = { owner = { has_country_flag = bm_refugees_closed } }
-						NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+						owner = { can_receive_refugees_by_policy = yes }
 						owner = { has_stability > 0.40 }
 						}
 						set_temp_variable = { refugee_state_number = 4 }
@@ -2821,7 +2846,7 @@ devastation_state_trigger_migration = {
 						NOT = { state = PREV }
 						NOT = { owner = { has_country_flag = bm_refugees_closed } }
 						NOT = { owner = { has_country_flag = bm_refugees_discouraging } }
-						NOT = { owner = { check_variable = { country_unassimilated_pops_ratio_core > 0.20 } } }
+						owner = { can_receive_refugees_by_policy = yes }
 						}
 						set_temp_variable = { refugee_state_number = 4 }
 						meta_effect_migrating_refugees = yes
@@ -3251,6 +3276,12 @@ devastation_state_calc_combat_intensity = {
 	set_variable = { state_combat_density_mult = 1.00 }
 	set_variable = { state_combat_destructive_mult = 1.00 }
 	set_variable = { state_combat_intensity_mult = 1.00 }
+	set_variable = { state_warfare_conduct_dev_mult = 1.00 }
+	set_variable = { state_warfare_conduct_civ_mult = 1.00 }
+	set_variable = { state_warfare_conduct_divisions = 0 }
+	set_variable = { state_warfare_conduct_core_cap = 0 }
+	set_variable = { state_warfare_conduct_dev_sum = 0 }
+	set_variable = { state_warfare_conduct_civ_sum = 0 }
 	
 	every_state_division = {
 		limit = {
@@ -3258,6 +3289,22 @@ devastation_state_calc_combat_intensity = {
 		}
 		
 		add_to_variable = { PREV.state_combat_divisions_all = 1 }
+		add_to_variable = { PREV.state_warfare_conduct_divisions = 1 }
+		set_temp_variable = { global.bm_conduct_div_dev = 1.00 }
+		set_temp_variable = { global.bm_conduct_div_civ = 1.00 }
+		OWNER = {
+			if = {
+				limit = { check_variable = { warfare_stance_dev_mult > 0.1 } }
+				set_temp_variable = { global.bm_conduct_div_dev = warfare_stance_dev_mult }
+			}
+			if = {
+				limit = { check_variable = { warfare_stance_civ_mult > 0.1 } }
+				set_temp_variable = { global.bm_conduct_div_civ = warfare_stance_civ_mult }
+			}
+		}
+		add_to_variable = { PREV.state_warfare_conduct_dev_sum = global.bm_conduct_div_dev }
+		add_to_variable = { PREV.state_warfare_conduct_civ_sum = global.bm_conduct_div_civ }
+		
 		
 		if = {
 			limit = {
@@ -3380,6 +3427,26 @@ devastation_state_calc_combat_intensity = {
 			}
 			add_to_variable = { PREV.state_combat_destructive_score = 0.08 }
 		}
+	}
+	
+		
+	if = {
+		limit = { check_variable = { state_warfare_conduct_divisions > 0 } }
+		set_variable = { state_warfare_conduct_dev_mult = state_warfare_conduct_dev_sum }
+		divide_variable = { state_warfare_conduct_dev_mult = state_warfare_conduct_divisions }
+		set_variable = { state_warfare_conduct_civ_mult = state_warfare_conduct_civ_sum }
+		divide_variable = { state_warfare_conduct_civ_mult = state_warfare_conduct_divisions }
+	}
+	
+	if = {
+		limit = {
+			state_is_combat_bubble = yes
+			is_fully_controlled_by = owner
+			is_core_of = owner
+			check_variable = { state_warfare_conduct_dev_mult > 1.15 }
+		}
+		set_variable = { state_warfare_conduct_dev_mult = 1.15 }
+		set_variable = { state_warfare_conduct_core_cap = 1 }
 	}
 	
 	if = { limit = { check_variable = { state_combat_divisions_all > 0 } } set_variable = { state_combat_density_mult = 0.65 } }
@@ -3543,6 +3610,12 @@ devastation_state_calc_value = {
 	set_variable = { state_combat_density_mult = 1.00 }
 	set_variable = { state_combat_destructive_mult = 1.00 }
 	set_variable = { state_combat_intensity_mult = 1.00 }
+	set_variable = { state_warfare_conduct_dev_mult = 1.00 }
+	set_variable = { state_warfare_conduct_civ_mult = 1.00 }
+	set_variable = { state_warfare_conduct_divisions = 0 }
+	set_variable = { state_warfare_conduct_core_cap = 0 }
+	set_variable = { state_warfare_conduct_dev_sum = 0 }
+	set_variable = { state_warfare_conduct_civ_sum = 0 }
 	
 	devastation_state_calc_bombing_intensity = yes
 	
@@ -3649,6 +3722,26 @@ devastation_state_calc_value = {
 		limit = { state_is_besieged = yes }
     
 		add_to_temp_variable = { siege_gain = global.devastation_base_gain_siege }
+		set_temp_variable = { global.bm_siege_controller_conduct = 1.00 }
+		set_temp_variable = { global.bm_siege_owner_conduct = 1.00 }
+		controller = {
+			if = {
+				limit = { check_variable = { warfare_stance_dev_mult > 0.1 } }
+				set_temp_variable = { global.bm_siege_controller_conduct = warfare_stance_dev_mult }
+			}
+		}
+		owner = {
+			if = {
+				limit = { check_variable = { warfare_stance_dev_mult > 0.1 } }
+				set_temp_variable = { global.bm_siege_owner_conduct = warfare_stance_dev_mult }
+			}
+		}
+		set_temp_variable = { siege_conduct_mult = global.bm_siege_controller_conduct }
+		add_to_temp_variable = { siege_conduct_mult = global.bm_siege_owner_conduct }
+		divide_temp_variable = { siege_conduct_mult = 2 }
+		clamp_temp_variable = { var = siege_conduct_mult min = 0.85 max = 1.45 }
+		multiply_temp_variable = { siege_gain = siege_conduct_mult }
+		set_variable = { state_warfare_conduct_dev_mult = siege_conduct_mult }
 	}
 	
 	if = {
@@ -3665,11 +3758,13 @@ devastation_state_calc_value = {
 		set_temp_variable = { combat_source_mult = state_combat_intensity_mult }
 		clamp_temp_variable = { var = combat_source_mult min = 0.70 max = 3.00 }
 		multiply_temp_variable = { active_combat_gain = combat_source_mult }
+		multiply_temp_variable = { active_combat_gain = state_warfare_conduct_dev_mult }
 		set_variable = { state_devastation_heavy_combat_gain = active_combat_gain }
 		
 		set_temp_variable = { combat_source_mult = state_combat_intensity_mult }
 		clamp_temp_variable = { var = combat_source_mult min = 0.70 max = 1.65 }
 		multiply_temp_variable = { frontline_skirmish_gain = combat_source_mult }
+		multiply_temp_variable = { frontline_skirmish_gain = state_warfare_conduct_dev_mult }
 		set_variable = { state_devastation_frontline_gain = frontline_skirmish_gain }
 	}
 	
@@ -3738,23 +3833,8 @@ devastation_state_calc_value = {
 	add_to_temp_variable = { temp_threshold_loss = 1 }					# Addition
 	multiply_temp_variable = { base_loss = temp_threshold_loss }			# Addition
 	
-	# =====================================================================
-	# WARFARE CONDUCT — DEVASTATION GAIN MULTIPLIER
-	# Only fires when base_gain > 0 (devastation actively increasing).
-	# Does NOT touch base_loss — only scales the gain side.
-	# Uses controller scope to copy dev_mult into a temp var first,
-	# since multiply_temp_variable cannot read cross-scope variables directly.
-	# =====================================================================
-	if = {
-		limit = {
-			check_variable = { base_gain > 0 }
-			controller = { check_variable = { warfare_stance_dev_mult > 0.1 } }
-		}
-		# Copy country variable into state-scope temp var before multiplying
-		controller = { set_temp_variable = { global.bm_dev_mult_temp = warfare_stance_dev_mult } }
-		multiply_temp_variable = { base_gain = global.bm_dev_mult_temp }
-	}
-	
+	# Warfare conduct is applied at the combat/siege source level above.
+	# Bombing, resistance, saturation, and recovery are intentionally not scaled here.	
 	add_to_variable = { state_devastation_value = base_gain }
 	add_to_variable = { state_devastation_value = base_loss }
 	

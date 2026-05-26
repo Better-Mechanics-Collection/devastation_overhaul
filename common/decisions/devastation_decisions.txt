@@ -65,8 +65,8 @@ bm_warfare_conduct_category = {
 			# One-time: generals resist, morale hits, but home front gains confidence
 			add_stability = 0.10
 			add_war_support = -0.20
-			set_variable = { warfare_stance_civ_mult = 0.25 }
-			set_variable = { warfare_stance_dev_mult = 0.70 }
+			set_variable = { warfare_stance_civ_mult = 0.20 }
+			set_variable = { warfare_stance_dev_mult = 0.55 }
 			set_country_flag = bm_conduct_humanitarian_active
 			clr_country_flag = bm_conduct_pacifist_active
 			clr_country_flag = bm_conduct_restrained_active
@@ -133,8 +133,8 @@ bm_warfare_conduct_category = {
 			}
 			# One-time: modest stability gain for principled stance
 			add_stability = 0.05
-			set_variable = { warfare_stance_civ_mult = 0.50 }
-			set_variable = { warfare_stance_dev_mult = 0.85 }
+			set_variable = { warfare_stance_civ_mult = 0.45 }
+			set_variable = { warfare_stance_dev_mult = 0.72 }
 			set_country_flag = bm_conduct_pacifist_active
 			clr_country_flag = bm_conduct_humanitarian_active
 			clr_country_flag = bm_conduct_restrained_active
@@ -197,8 +197,8 @@ bm_warfare_conduct_category = {
 				remove_opinion_modifier = { target = ROOT modifier = bm_conduct_total_war_opinion }
 				remove_opinion_modifier = { target = ROOT modifier = bm_conduct_scorched_earth_opinion }
 			}
-			set_variable = { warfare_stance_civ_mult = 0.75 }
-			set_variable = { warfare_stance_dev_mult = 0.90 }
+			set_variable = { warfare_stance_civ_mult = 0.70 }
+			set_variable = { warfare_stance_dev_mult = 0.88 }
 			set_country_flag = bm_conduct_restrained_active
 			clr_country_flag = bm_conduct_humanitarian_active
 			clr_country_flag = bm_conduct_pacifist_active
@@ -322,8 +322,8 @@ bm_warfare_conduct_category = {
 			}
 			# One-time: troops slightly demotivated by aggressive orders
 			add_war_support = -0.05
-			set_variable = { warfare_stance_civ_mult = 1.25 }
-			set_variable = { warfare_stance_dev_mult = 1.15 }
+			set_variable = { warfare_stance_civ_mult = 1.35 }
+			set_variable = { warfare_stance_dev_mult = 1.25 }
 			set_country_flag = bm_conduct_aggressive_active
 			clr_country_flag = bm_conduct_humanitarian_active
 			clr_country_flag = bm_conduct_pacifist_active
@@ -397,8 +397,8 @@ bm_warfare_conduct_category = {
 			# One-time: mobilization de-energy + political cost
 			add_war_support = -0.10
 			add_stability = -0.05
-			set_variable = { warfare_stance_civ_mult = 1.50 }
-			set_variable = { warfare_stance_dev_mult = 1.30 }
+			set_variable = { warfare_stance_civ_mult = 1.90 }
+			set_variable = { warfare_stance_dev_mult = 1.60 }
 			set_country_flag = bm_conduct_total_war_active
 			clr_country_flag = bm_conduct_humanitarian_active
 			clr_country_flag = bm_conduct_pacifist_active
@@ -473,8 +473,8 @@ bm_warfare_conduct_category = {
 			add_war_support = -0.15
 			add_stability = -0.10
 			add_political_power = -30
-			set_variable = { warfare_stance_civ_mult = 2.00 }
-			set_variable = { warfare_stance_dev_mult = 1.60 }
+			set_variable = { warfare_stance_civ_mult = 2.80 }
+			set_variable = { warfare_stance_dev_mult = 2.15 }
 			set_country_flag = bm_conduct_scorched_earth_active
 			clr_country_flag = bm_conduct_humanitarian_active
 			clr_country_flag = bm_conduct_pacifist_active
@@ -517,19 +517,19 @@ bm_refugee_policy_category = {
 
 		days_remove = -1
 
-		modifier = {
-			weekly_manpower = -75
-			consumer_goods_factor = 0.05
-		}
-
 		complete_effect = {
 			remove_decision = bm_refugees_welcoming
 			remove_decision = bm_refugees_neutral
 			remove_decision = bm_refugees_discouraging
 			remove_decision = bm_refugees_closed_borders
-			# One-time: humanitarian reputation boosts home stability
-			add_stability = 0.05
+			# Refugee strain is now calculated dynamically from actual unassimilated population.
 			set_country_flag = bm_refugees_open
+			set_variable = { refugee_acceptance_mult = 1.35 }
+			set_variable = { refugee_capacity_ratio = 0.30 }
+			set_variable = { refugee_capacity_percent = 30 }
+			set_variable = { refugee_stability_burden_mult = 0.70 }
+			set_variable = { refugee_consumer_goods_burden_mult = 1.25 }
+			set_variable = { refugee_assimilation_mult = 1.25 }
 			clr_country_flag = bm_refugees_welcoming
 			clr_country_flag = bm_refugees_neutral
 			clr_country_flag = bm_refugees_discouraging
@@ -562,19 +562,19 @@ bm_refugee_policy_category = {
 
 		days_remove = -1
 
-		modifier = {
-			weekly_manpower = -35
-			consumer_goods_factor = 0.025
-		}
-
 		complete_effect = {
 			remove_decision = bm_refugees_open_door
 			remove_decision = bm_refugees_neutral
 			remove_decision = bm_refugees_discouraging
 			remove_decision = bm_refugees_closed_borders
-			# One-time: modest goodwill
-			add_stability = 0.02
+			# Refugee strain is now calculated dynamically from actual unassimilated population.
 			set_country_flag = bm_refugees_welcoming
+			set_variable = { refugee_acceptance_mult = 1.15 }
+			set_variable = { refugee_capacity_ratio = 0.25 }
+			set_variable = { refugee_capacity_percent = 25 }
+			set_variable = { refugee_stability_burden_mult = 0.85 }
+			set_variable = { refugee_consumer_goods_burden_mult = 1.00 }
+			set_variable = { refugee_assimilation_mult = 1.10 }
 			clr_country_flag = bm_refugees_open
 			clr_country_flag = bm_refugees_neutral
 			clr_country_flag = bm_refugees_discouraging
@@ -613,6 +613,12 @@ bm_refugee_policy_category = {
 			remove_decision = bm_refugees_discouraging
 			remove_decision = bm_refugees_closed_borders
 			set_country_flag = bm_refugees_neutral
+			set_variable = { refugee_acceptance_mult = 1.00 }
+			set_variable = { refugee_capacity_ratio = 0.20 }
+			set_variable = { refugee_capacity_percent = 20 }
+			set_variable = { refugee_stability_burden_mult = 1.00 }
+			set_variable = { refugee_consumer_goods_burden_mult = 0.70 }
+			set_variable = { refugee_assimilation_mult = 1.00 }
 			clr_country_flag = bm_refugees_open
 			clr_country_flag = bm_refugees_welcoming
 			clr_country_flag = bm_refugees_discouraging
@@ -658,6 +664,12 @@ bm_refugee_policy_category = {
 			# One-time: visible suffering breeds domestic unrest
 			add_stability = -0.02
 			set_country_flag = bm_refugees_discouraging
+			set_variable = { refugee_acceptance_mult = 0.65 }
+			set_variable = { refugee_capacity_ratio = 0.12 }
+			set_variable = { refugee_capacity_percent = 12 }
+			set_variable = { refugee_stability_burden_mult = 1.20 }
+			set_variable = { refugee_consumer_goods_burden_mult = 0.35 }
+			set_variable = { refugee_assimilation_mult = 0.75 }
 			clr_country_flag = bm_refugees_open
 			clr_country_flag = bm_refugees_welcoming
 			clr_country_flag = bm_refugees_neutral
@@ -705,6 +717,12 @@ bm_refugee_policy_category = {
 			add_stability = -0.05
 			add_war_support = -0.05
 			set_country_flag = bm_refugees_closed
+			set_variable = { refugee_acceptance_mult = 0.10 }
+			set_variable = { refugee_capacity_ratio = 0.05 }
+			set_variable = { refugee_capacity_percent = 5 }
+			set_variable = { refugee_stability_burden_mult = 1.45 }
+			set_variable = { refugee_consumer_goods_burden_mult = 0.15 }
+			set_variable = { refugee_assimilation_mult = 0.50 }
 			clr_country_flag = bm_refugees_open
 			clr_country_flag = bm_refugees_welcoming
 			clr_country_flag = bm_refugees_neutral

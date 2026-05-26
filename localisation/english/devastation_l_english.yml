@@ -23,7 +23,7 @@
  
  
  assimilation_decisions: "Displaced Populations"
- assimilation_decisions_desc: "As devastation spreads across the land, §Ypopulations§! are uprooted from their homes and livelihoods. These §Ydisplaced civilians§!, whether fleeing destruction within our borders or arriving from abroad, are grouped under our §OUnassimilated Population§! pool.\n\nThese populations are not yet fully reintegrated into the economic and administrative structure of the state. Over time, we may §Greintegrate§! them into our core population through natural recovery or targeted political efforts. Alternatively, if the burden becomes too great, we may choose to §Rforcibly expel§! them beyond our borders...\n\nCurrently, we have a total §OUnassimilated Population§! of §R[?country_unassimilated_pops|2]K§!, representing §Y[CountryUnassimilatedPopsRatio]§! of our §Ccore population§! of §C[?country_core_population_controlled]K§!.\n\nFor every §Y0.1%§! of this ratio, we suffer a debuff of §R[?global.unassimilated_stability_factor]%§! to §YStability§!. At present, this results in a total penalty of [?country_unassimilated_pops_modifier^0|+2%] §YStability Factor§!.\n\nSince the start of the game, a total of §Y[?total_external_refugees_in_game|2]K§! §Ointernally & externally displaced civilians§! have been registered inside our nation, of whom §G[?total_external_refugees_assimilated_in_game|2]K§! were §Greintegrated§! and §R[?total_external_refugees_expelled_in_game|2]K§! were §Rforcibly expelled§!.\n\nIf you are at peace and neighboring nations at war, it's very likely that you have external refugees & if you're at war and losing ground/being actively bombed, its more than likely that you have internal refugees."
+ assimilation_decisions_desc: "As devastation spreads across the land, §Ypopulations§! are uprooted from their homes and livelihoods. These §Ydisplaced civilians§!, whether fleeing destruction within our borders or arriving from abroad, are grouped under our §OUnassimilated Population§! pool.\n\nThese populations are not yet fully reintegrated into the economic and administrative structure of the state. Over time, we may §Greintegrate§! them into our core population through natural recovery or targeted political efforts. Alternatively, if the burden becomes too great, we may choose to §Rforcibly expel§! them beyond our borders...\n\nCurrently, we have a total §OUnassimilated Population§! of §R[?country_unassimilated_pops|2]K§!, representing §Y[CountryUnassimilatedPopsRatio]§! of our §Ccore population§! of §C[?country_core_population_controlled]K§!.\n\nFor every §Y0.1%§! of this ratio, we suffer a debuff of §R[?global.unassimilated_stability_factor]%§! to §YStability§!. At present, this results in [?country_unassimilated_pops_modifier^0|+2%] §YStability Factor§!, [?country_unassimilated_pops_modifier^1|-2%] §YConsumer Goods§!, and [?country_unassimilated_pops_modifier^2|+2] §YPolitical Power§!.\n\nRefugee policy capacity: §Y[?refugee_capacity_percent|1]%§! of core population. Current over-capacity pressure: §R[?refugee_over_capacity_percent|2]%§!.\n\nSince the start of the game, a total of §Y[?total_external_refugees_in_game|2]K§! §Ointernally & externally displaced civilians§! have been registered inside our nation, of whom §G[?total_external_refugees_assimilated_in_game|2]K§! were §Greintegrated§! and §R[?total_external_refugees_expelled_in_game|2]K§! were §Rforcibly expelled§!.\n\nIf you are at peace and neighboring nations at war, it's very likely that you have external refugees & if you're at war and losing ground/being actively bombed, its more than likely that you have internal refugees."
 
  assimilation_passive_decision: "Passive Population Reintegration"
  assimilation_passive_decision_desc: "Over time, displaced and unassimilated populations will gradually reintegrate into society as housing is restored and administrative order returns."
@@ -105,7 +105,7 @@
 #SDFactors8Key: "\n     Decisions Reduction: [FROM.controller.GetName] [?FROM.controller.modifier@state_devastation_reduction|-=3]"
 #SDFactors9Key: "\n     Decisions Reduction Factor: [?FROM.controller.modifier@state_devastation_reduction_factor|-=3%]"
  SDFactors10Key: "\n     State Under Siege: §R+[?FROM.state_devastation_siege_gain|=3]§!"
- SDFactors13Key: "\n     §YCombat Intensity§!: x[?FROM.state_combat_intensity_mult|2]\n       Divisions in State: §Y[?FROM.state_combat_divisions_all|0]§! -> Density x[?FROM.state_combat_density_mult|2]\n       Destructive Units: score §Y[?FROM.state_combat_destructive_score|2]§! -> Equipment x[?FROM.state_combat_destructive_mult|2]\n       Support guns count lightly; dedicated artillery, rockets, heavy guns, flame/engineer units, and armor cause extra damage.\n       Unknown modded units still count through division density.\n"
+ SDFactors13Key: "\n     §YCombat Intensity§!: x[?FROM.state_combat_intensity_mult|2]\n       Divisions in State: §Y[?FROM.state_combat_divisions_all|0]§! -> Density x[?FROM.state_combat_density_mult|2]\n       Destructive Units: score §Y[?FROM.state_combat_destructive_score|2]§! -> Equipment x[?FROM.state_combat_destructive_mult|2]\n       Support guns count lightly; dedicated artillery, rockets, heavy guns, flame/engineer units, and armor cause extra damage.\n       Unknown modded units still count through division density.\n       Warfare Conduct: x[?FROM.state_warfare_conduct_dev_mult|2], weighted from §Y[?FROM.state_warfare_conduct_divisions|0]§! combatant divisions. Core homeland cap: [?FROM.state_warfare_conduct_core_cap|0]\n"
  
  
  SDFactors11Key0: "\n     §YUndeveloped Area§! \n     Devastation Multiplier: §G-90%§!"
@@ -260,35 +260,35 @@
  bm_refugee_policy_category_desc: "Determines how open your borders are to §Ydisplaced civilians§! fleeing war.\n\n§GWelcoming§! policies absorb more refugees but strain your §Reconomy and manpower§!.\n§RClosed§! borders preserve resources but §Risolate you diplomatically§! and breed §Runrest in occupied territories§!.\n\nThe §Ycurrently active policy§! is greyed out."
 
  bm_refugees_open: "§COpen Door Policy§!"
- bm_refugees_open_desc: "Your borders are open to all displaced persons without restriction. Refugees are actively welcomed and resettled.\n\n§YActive effects:§!\nWeekly Manpower §R-75§!\nConsumer Goods §R+5%§!\n\n§YOn selecting:§!\nStability §G+5%§!\n\n§YRouting effect:§!\nRefugees §Gstrongly prefer§! your territory"
+ bm_refugees_open_desc: "Borders stay open and the state actively processes displaced civilians.\n\n§YDynamic effects:§!\nAcceptance §Gx1.35§!\nCapacity §Y30%§! of core population\nStability burden §Gx0.70§!\nConsumer-goods/admin burden §Rx1.25§!\nAssimilation §Gx1.25§!\n\nNo instant stability bonus: benefits come from better integration, not from the border sign doing magic."
 
  bm_refugees_open_door: "§COpen Door Policy§!"
- bm_refugees_open_door_desc: "Your borders are open to all displaced persons without restriction. Refugees are actively welcomed and resettled.\n\n§YActive effects:§!\nWeekly Manpower §R-75§!\nConsumer Goods §R+5%§!\n\n§YOn selecting:§!\nStability §G+5%§!\n\n§YRouting effect:§!\nRefugees §Gstrongly prefer§! your territory"
+ bm_refugees_open_door_desc: "Borders stay open and the state actively processes displaced civilians.\n\n§YDynamic effects:§!\nAcceptance §Gx1.35§!\nCapacity §Y30%§! of core population\nStability burden §Gx0.70§!\nConsumer-goods/admin burden §Rx1.25§!\nAssimilation §Gx1.25§!\n\nNo instant stability bonus: benefits come from better integration, not from the border sign doing magic."
 
  bm_refugees_welcoming: "§GWelcoming Policy§!"
- bm_refugees_welcoming_desc: "Refugees are accepted and processed through an organised intake system. Your country remains a preferred destination for those fleeing conflict.\n\n§YActive effects:§!\nWeekly Manpower §R-35§!\nConsumer Goods §R+2.5%§!\n\n§YOn selecting:§!\nStability §G+2%§!\n\n§YRouting effect:§!\nRefugees §Gprefer§! your territory"
+ bm_refugees_welcoming_desc: "Refugees are accepted through an organised but more limited intake system.\n\n§YDynamic effects:§!\nAcceptance §Gx1.15§!\nCapacity §Y25%§! of core population\nStability burden §Gx0.85§!\nConsumer-goods/admin burden §Yx1.00§!\nAssimilation §Gx1.10§!"
 
  bm_refugees_neutral: "Neutral Policy§!"
- bm_refugees_neutral_desc: "Standard wartime border controls. Refugees may enter through normal channels but no special provisions are made.\n\nThis is the §Ydefault posture§!.\n\n§YRouting effect:§!\nRefugees may enter normally"
+ bm_refugees_neutral_desc: "Standard wartime border controls. Refugees may enter through normal channels, but no special provisions are made.\n\n§YDynamic effects:§!\nAcceptance §Yx1.00§!\nCapacity §Y20%§! of core population\nStability burden §Yx1.00§!\nConsumer-goods/admin burden §Gx0.70§!\nAssimilation §Yx1.00§!"
 
  bm_refugees_discouraging: "§YDiscouraging Policy§!"
- bm_refugees_discouraging_desc: "Border controls are tightened and refugee intake is actively limited. Significant bureaucratic resources drain political capital, and visible suffering breeds unrest.\n\n§YActive effects:§!\nPolitical Power per day §R-0.10§!\nResistance in occupied states §Rslightly increases§!\n\n§YOn selecting:§!\nStability §R-2%§!\n\n§YRouting effect:§!\nRefugees §Ravoid§! your territory unless no other option exists"
+ bm_refugees_discouraging_desc: "Border controls are tightened and refugee intake is actively discouraged. Fewer people enter, but unmanaged suffering and enforcement pressure create unrest.\n\n§YDynamic effects:§!\nAcceptance §Rx0.65§!\nCapacity §Y12%§! of core population\nStability burden §Rx1.20§!\nConsumer-goods/admin burden §Gx0.35§!\nAssimilation §Rx0.75§!"
 
  bm_refugees_closed_borders: "§RClosed Borders§!"
- bm_refugees_closed_borders_desc: "Borders are sealed against all refugee movement. The enforcement apparatus is costly and your isolationism is noted internationally.\n\n§YActive effects:§!\nPolitical Power per day §R-0.20§!\nMonthly Opinion Gain §R-15%§!\nResistance in occupied states §Rincreases§!\n\n§YOn selecting:§!\nStability §R-5%§!\nWar Support §R-5%§!\n\n§YRouting effect:§!\nRefugees §Rcannot§! enter your territory"
+ bm_refugees_closed_borders_desc: "Borders are sealed against normal refugee movement. Resources are preserved, but repression, isolation, and visible suffering create political and resistance pressure.\n\n§YDynamic effects:§!\nAcceptance §Rx0.10§!\nCapacity §Y5%§! of core population\nStability burden §Rx1.45§!\nConsumer-goods/admin burden §Gx0.15§!\nAssimilation §Rx0.50§!"
 
  bm_refugees_closed: "§RClosed Borders§!"
- bm_refugees_closed_desc: "Borders are sealed against all refugee movement. The enforcement apparatus is costly and your isolationism is noted internationally.\n\n§YActive effects:§!\nPolitical Power per day §R-0.20§!\nMonthly Opinion Gain §R-15%§!\nResistance in occupied states §Rincreases§!\n\n§YOn selecting:§!\nStability §R-5%§!\nWar Support §R-5%§!\n\n§YRouting effect:§!\nRefugees §Rcannot§! enter your territory"
+ bm_refugees_closed_desc: "Borders are sealed against normal refugee movement. Resources are preserved, but repression, isolation, and visible suffering create political and resistance pressure.\n\n§YDynamic effects:§!\nAcceptance §Rx0.10§!\nCapacity §Y5%§! of core population\nStability burden §Rx1.45§!\nConsumer-goods/admin burden §Gx0.15§!\nAssimilation §Rx0.50§!"
 
  # =====================================================================
  # WARFARE CONDUCT TOOLTIP FACTORS
  # =====================================================================
- SDFactors12Key_humanitarian: "\n     Humanitarian Conduct: §GDevastation Gain x0.70§!"
- SDFactors12Key_pacifist: "\n     Pacifist Conduct: §GDevastation Gain x0.85§!"
- SDFactors12Key_restrained: "\n     Restrained Conduct: §GDevastation Gain x0.90§!"
- SDFactors12Key_aggressive: "\n     Aggressive Conduct: §YDevastation Gain x1.15§!"
- SDFactors12Key_total_war: "\n     Total War Conduct: §RDevastation Gain x1.30§!"
- SDFactors12Key_scorched_earth: "\n     Scorched Earth: §RDevastation Gain x1.60§!"
+ SDFactors12Key_humanitarian: "\n     Humanitarian Conduct: §GDevastation Gain x0.55§!"
+ SDFactors12Key_pacifist: "\n     Pacifist Conduct: §GDevastation Gain x0.72§!"
+ SDFactors12Key_restrained: "\n     Restrained Conduct: §GDevastation Gain x0.88§!"
+ SDFactors12Key_aggressive: "\n     Aggressive Conduct: §YDevastation Gain x1.25§!"
+ SDFactors12Key_total_war: "\n     Total War Conduct: §RDevastation Gain x1.60§!"
+ SDFactors12Key_scorched_earth: "\n     Scorched Earth: §RDevastation Gain x2.15§!"
 
  # =====================================================================
  # DYNAMIC MODIFIER & OPINION MODIFIER NAMES (kept from uploaded file)

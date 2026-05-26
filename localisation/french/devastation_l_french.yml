@@ -1,4 +1,4 @@
-﻿l_french:
+l_french:
 
  # Decisions
  devastation_decisions: "Réduction de la dévastation"
@@ -105,7 +105,7 @@
 #SDFactors8Key: "\n     Réduction via décisions : [FROM.controller.GetName] [?FROM.controller.modifier@state_devastation_reduction|-=3]"
 #SDFactors9Key: "\n     Facteur de réduction via décisions : [?FROM.controller.modifier@state_devastation_reduction_factor|-=3%]"
  SDFactors10Key: "\n     État assiégé : §R+[?FROM.state_devastation_siege_gain|=3]§!"
- SDFactors13Key: "\n     §YIntensité des combats§! : x[?FROM.state_combat_intensity_mult|2]\n       Divisions dans l'État : §Y[?FROM.state_combat_divisions_all|0]§! -> Densité x[?FROM.state_combat_density_mult|2]\n       Unités destructrices : score §Y[?FROM.state_combat_destructive_score|2]§! -> Équipement x[?FROM.state_combat_destructive_mult|2]\n       Les canons de soutien comptent légèrement; l'artillerie dédiée, les roquettes, les canons lourds, les flammes/génie et les blindés aggravent les dégâts.\n       Les unités modifiées inconnues comptent encore via la densité des divisions."
+ SDFactors13Key: "\n     §YIntensite des combats§!: x[?FROM.state_combat_intensity_mult|2]\n       Divisions dans l Etat: §Y[?FROM.state_combat_divisions_all|0]§! -> Densite x[?FROM.state_combat_density_mult|2]\n       Unites destructrices: score §Y[?FROM.state_combat_destructive_score|2]§! -> Equipement x[?FROM.state_combat_destructive_mult|2]\n       Les canons de soutien comptent legerement; artillerie dediee, roquettes, canons lourds, genie/flammes et blindes aggravent les degats.\n       Les unites moddees inconnues comptent encore via la densite des divisions.\n       Conduite de guerre: x[?FROM.state_warfare_conduct_dev_mult|2], ponderee par §Y[?FROM.state_warfare_conduct_divisions|0]§! divisions combattantes. Plafond de territoire national: [?FROM.state_warfare_conduct_core_cap|0]\n"
  
  
  SDFactors11Key0: "\n     §YZone sous-développée§! \n     Multiplicateur de dévastation : §G-90%§!"
@@ -260,35 +260,35 @@
  bm_refugee_policy_category_desc: "Détermine le degré d'ouverture de vos frontières aux §Ycivils déplacés§! fuyant la guerre.\n\nLes politiques §Gaccueillantes§! absorbent davantage de réfugiés, mais pèsent sur votre §Réconomie et votre main-d'œuvre§!.\nLes frontières §Rfermées§! préservent les ressources, mais vous §Risolent diplomatiquement§! et nourrissent les §Rtroubles dans les territoires occupés§!.\n\nLa §Ypolitique actuellement active§! est grisée."
 
  bm_refugees_open: "§CPolitique de la porte ouverte§!"
- bm_refugees_open_desc: "Vos frontières sont ouvertes à toutes les personnes déplacées sans restriction. Les réfugiés sont activement accueillis et réinstallés.\n\n§YEffets actifs :§!\nMain-d'œuvre hebdomadaire §R-75§!\nBiens de consommation §R+5%§!\n\n§YLors de la sélection :§!\nStabilité §G+5%§!\n\n§YEffet d'orientation :§!\nLes réfugiés §Gpréfèrent fortement§! votre territoire"
+ bm_refugees_open_desc: "Frontieres ouvertes et accueil organise des civils deplaces.\n\n§YEffets dynamiques:§!\nAcceptation §Gx1.35§!\nCapacite §Y30%§! de la population nationale\nPression sur la stabilite §Gx0.70§!\nCharge administrative/biens de consommation §Rx1.25§!\nAssimilation §Gx1.25§!\n\nPlus de bonus magique de stabilite: les gains viennent de meilleure integration."
 
  bm_refugees_open_door: "§CPolitique de la porte ouverte§!"
- bm_refugees_open_door_desc: "Vos frontières sont ouvertes à toutes les personnes déplacées sans restriction. Les réfugiés sont activement accueillis et réinstallés.\n\n§YEffets actifs :§!\nMain-d'œuvre hebdomadaire §R-75§!\nBiens de consommation §R+5%§!\n\n§YLors de la sélection :§!\nStabilité §G+5%§!\n\n§YEffet d'orientation :§!\nLes réfugiés §Gpréfèrent fortement§! votre territoire"
+ bm_refugees_open_door_desc: "Frontieres ouvertes et accueil organise des civils deplaces.\n\n§YEffets dynamiques:§!\nAcceptation §Gx1.35§!\nCapacite §Y30%§! de la population nationale\nPression sur la stabilite §Gx0.70§!\nCharge administrative/biens de consommation §Rx1.25§!\nAssimilation §Gx1.25§!\n\nPlus de bonus magique de stabilite: les gains viennent de meilleure integration."
 
  bm_refugees_welcoming: "§GPolitique accueillante§!"
- bm_refugees_welcoming_desc: "Les réfugiés sont acceptés et pris en charge par un système d'accueil organisé. Votre pays demeure une destination privilégiée pour ceux qui fuient les conflits.\n\n§YEffets actifs :§!\nMain-d'œuvre hebdomadaire §R-35§!\nBiens de consommation §R+2.5%§!\n\n§YLors de la sélection :§!\nStabilité §G+2%§!\n\n§YEffet d'orientation :§!\nLes réfugiés §Gpréfèrent§! votre territoire"
+ bm_refugees_welcoming_desc: "Les refugies sont acceptes par un systeme organise mais plus limite.\n\n§YEffets dynamiques:§!\nAcceptation §Gx1.15§!\nCapacite §Y25%§! de la population nationale\nPression sur la stabilite §Gx0.85§!\nCharge administrative/biens de consommation §Yx1.00§!\nAssimilation §Gx1.10§!"
 
  bm_refugees_neutral: "Politique neutre§!"
- bm_refugees_neutral_desc: "Contrôles frontaliers ordinaires en temps de guerre. Les réfugiés peuvent entrer par les voies normales, mais aucune disposition particulière n'est prévue.\n\nIl s'agit de la §Yposture par défaut§!.\n\n§YEffet d'orientation :§!\nLes réfugiés peuvent entrer normalement"
+ bm_refugees_neutral_desc: "Controle frontalier standard en temps de guerre. Les refugies peuvent entrer normalement, sans mesures speciales.\n\n§YEffets dynamiques:§!\nAcceptation §Yx1.00§!\nCapacite §Y20%§! de la population nationale\nPression sur la stabilite §Yx1.00§!\nCharge administrative/biens de consommation §Gx0.70§!\nAssimilation §Yx1.00§!"
 
  bm_refugees_discouraging: "§YPolitique dissuasive§!"
- bm_refugees_discouraging_desc: "Les contrôles frontaliers sont renforcés et l'accueil des réfugiés est activement limité. D'importantes ressources bureaucratiques drainent le capital politique, tandis que les souffrances visibles alimentent les troubles.\n\n§YEffets actifs :§!\nPouvoir politique par jour §R-0.10§!\nLa résistance dans les États occupés §Raugmente légèrement§!\n\n§YLors de la sélection :§!\nStabilité §R-2%§!\n\n§YEffet d'orientation :§!\nLes réfugiés §Révitent§! votre territoire sauf s'ils n'ont aucune autre option"
+ bm_refugees_discouraging_desc: "Les controles sont renforces et l accueil est limite. Moins de gens entrent, mais la repression et la souffrance visible creent de la tension.\n\n§YEffets dynamiques:§!\nAcceptation §Rx0.65§!\nCapacite §Y12%§! de la population nationale\nPression sur la stabilite §Rx1.20§!\nCharge administrative/biens de consommation §Gx0.35§!\nAssimilation §Rx0.75§!"
 
  bm_refugees_closed_borders: "§RFrontières fermées§!"
- bm_refugees_closed_borders_desc: "Les frontières sont fermées à tout mouvement de réfugiés. Le dispositif de contrôle est coûteux et votre isolationnisme est remarqué sur la scène internationale.\n\n§YEffets actifs :§!\nPouvoir politique par jour §R-0.20§!\nGain mensuel d'opinion §R-15%§!\nLa résistance dans les États occupés §Raugmente§!\n\n§YLors de la sélection :§!\nStabilité §R-5%§!\nSoutien à la guerre §R-5%§!\n\n§YEffet d'orientation :§!\nLes réfugiés §Rne peuvent pas§! entrer sur votre territoire"
+ bm_refugees_closed_borders_desc: "Les frontieres sont fermees aux mouvements normaux de refugies. Les ressources sont preservees, mais la repression et l isolement creent de la pression politique et de la resistance.\n\n§YEffets dynamiques:§!\nAcceptation §Rx0.10§!\nCapacite §Y5%§! de la population nationale\nPression sur la stabilite §Rx1.45§!\nCharge administrative/biens de consommation §Gx0.15§!\nAssimilation §Rx0.50§!"
 
  bm_refugees_closed: "§RFrontières fermées§!"
- bm_refugees_closed_desc: "Les frontières sont fermées à tout mouvement de réfugiés. Le dispositif de contrôle est coûteux et votre isolationnisme est remarqué sur la scène internationale.\n\n§YEffets actifs :§!\nPouvoir politique par jour §R-0.20§!\nGain mensuel d'opinion §R-15%§!\nLa résistance dans les États occupés §Raugmente§!\n\n§YLors de la sélection :§!\nStabilité §R-5%§!\nSoutien à la guerre §R-5%§!\n\n§YEffet d'orientation :§!\nLes réfugiés §Rne peuvent pas§! entrer sur votre territoire"
+ bm_refugees_closed_desc: "Les frontieres sont fermees aux mouvements normaux de refugies. Les ressources sont preservees, mais la repression et l isolement creent de la pression politique et de la resistance.\n\n§YEffets dynamiques:§!\nAcceptation §Rx0.10§!\nCapacite §Y5%§! de la population nationale\nPression sur la stabilite §Rx1.45§!\nCharge administrative/biens de consommation §Gx0.15§!\nAssimilation §Rx0.50§!"
 
  # =====================================================================
  # WARFARE CONDUCT TOOLTIP FACTORS
  # =====================================================================
- SDFactors12Key_humanitarian: "\n     Conduite humanitaire : §GGain de dévastation x0.70§!"
- SDFactors12Key_pacifist: "\n     Conduite pacifiste : §GGain de dévastation x0.85§!"
- SDFactors12Key_restrained: "\n     Conduite retenue : §GGain de dévastation x0.90§!"
- SDFactors12Key_aggressive: "\n     Conduite agressive : §YGain de dévastation x1.15§!"
- SDFactors12Key_total_war: "\n     Conduite de guerre totale : §RGain de dévastation x1.30§!"
- SDFactors12Key_scorched_earth: "\n     Terre brûlée : §RGain de dévastation x1.60§!"
+ SDFactors12Key_humanitarian: "\n     Conduite humanitaire : §GGain de devastation x0.55§!"
+ SDFactors12Key_pacifist: "\n     Conduite pacifiste : §GGain de devastation x0.72§!"
+ SDFactors12Key_restrained: "\n     Conduite retenue : §GGain de devastation x0.88§!"
+ SDFactors12Key_aggressive: "\n     Conduite agressive : §YGain de devastation x1.25§!"
+ SDFactors12Key_total_war: "\n     Conduite de guerre totale : §RGain de devastation x1.60§!"
+ SDFactors12Key_scorched_earth: "\n     Terre brulee : §RGain de devastation x2.15§!"
 
  # =====================================================================
  # DYNAMIC MODIFIER & OPINION MODIFIER NAMES (kept from uploaded file)

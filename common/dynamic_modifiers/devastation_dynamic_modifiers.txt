@@ -70,73 +70,78 @@ country_unassimilated_pops_modifier = {
 	remove_trigger = { always = no }
 
 	stability_factor = country_unassimilated_pops_modifier^0
+	consumer_goods_factor = country_unassimilated_pops_modifier^1
+	political_power_gain = country_unassimilated_pops_modifier^2
 }
 bm_conduct_humanitarian_modifier = {
-	army_speed_factor = -0.15
-	attrition = 0.08
-	planning_speed = -0.10
-	army_attack_factor = -0.10
-	defence = 0.05
-	army_org = 5
-	land_reinforce_rate = 0.05
-	dig_in_speed_factor = -0.10
-	supply_consumption_factor = 0.10
-	org_loss_when_moving = -0.05
+	army_speed_factor = -0.22
+	breakthrough_factor = -0.10
+	attrition = 0.10
+	planning_speed = -0.15
+	army_attack_factor = -0.15
+	defence = 0.08
+	army_org = 7
+	land_reinforce_rate = 0.06
+	dig_in_speed_factor = -0.12
+	supply_consumption_factor = 0.14
+	org_loss_when_moving = -0.06
 }
  
 bm_conduct_pacifist_modifier = {
-	army_speed_factor = -0.10
-	attrition = 0.05
-	army_attack_factor = -0.05
-	defence = 0.03
-	army_org = 3
-	land_reinforce_rate = 0.03
-	dig_in_speed_factor = -0.05
-	supply_consumption_factor = 0.05
-	org_loss_when_moving = -0.03
+	army_speed_factor = -0.14
+	breakthrough_factor = -0.05
+	attrition = 0.06
+	army_attack_factor = -0.07
+	defence = 0.05
+	army_org = 4
+	land_reinforce_rate = 0.04
+	dig_in_speed_factor = -0.06
+	supply_consumption_factor = 0.08
+	org_loss_when_moving = -0.04
 }
  
 bm_conduct_restrained_modifier = {
 	army_speed_factor = -0.05
 	attrition = 0.02
-	defence = 0.02
+	army_attack_factor = -0.02
+	defence = 0.03
 	army_org = 2
 	land_reinforce_rate = 0.02
-	supply_consumption_factor = 0.02
+	supply_consumption_factor = 0.03
 }
  
 bm_conduct_aggressive_modifier = {
-	army_speed_factor = 0.05
-	breakthrough_factor = 0.05
-	attrition = -0.05
-	army_attack_factor = 0.05
-	army_org = -2
-	dig_in_speed_factor = 0.05
-	supply_consumption_factor = 0.10
-	experience_gain_factor = 0.05
-	resistance_target = 0.10
+	army_speed_factor = 0.06
+	breakthrough_factor = 0.08
+	attrition = -0.04
+	army_attack_factor = 0.08
+	army_org = -3
+	dig_in_speed_factor = 0.06
+	supply_consumption_factor = 0.14
+	experience_gain_factor = 0.06
+	resistance_target = 0.14
 }
  
 bm_conduct_total_war_modifier = {
 	army_speed_factor = 0.10
-	breakthrough_factor = 0.10
-	attrition = -0.05
-	army_attack_factor = 0.10
-	army_org = -5
+	breakthrough_factor = 0.15
+	attrition = -0.02
+	army_attack_factor = 0.15
+	army_org = -7
 	dig_in_speed_factor = 0.10
-	supply_consumption_factor = 0.20
-	experience_gain_factor = 0.10
-	resistance_target = 0.20
+	supply_consumption_factor = 0.28
+	experience_gain_factor = 0.12
+	resistance_target = 0.30
 }
  
 bm_conduct_scorched_earth_modifier = {
-	army_speed_factor = 0.15
-	breakthrough_factor = 0.15
-	attrition = -0.10
-	army_attack_factor = 0.15
-	army_org = -10
-	dig_in_speed_factor = 0.15
-	supply_consumption_factor = 0.30
+	army_speed_factor = 0.08
+	breakthrough_factor = 0.20
+	attrition = 0.05
+	army_attack_factor = 0.18
+	army_org = -15
+	dig_in_speed_factor = 0.08
+	supply_consumption_factor = 0.45
 	experience_gain_factor = 0.15
-	resistance_target = 0.30
+	resistance_target = 0.45
 }

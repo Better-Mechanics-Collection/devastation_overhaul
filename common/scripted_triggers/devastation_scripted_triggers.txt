@@ -60,6 +60,17 @@ can_migrate_to_neighboring_state = {
 	#}
 }
 
+
+can_receive_refugees_by_policy = {
+	OR = {
+		NOT = { has_variable = refugee_capacity_percent }
+		check_variable = {
+			var = country_unassimilated_pops_ratio_core
+			value = refugee_capacity_percent
+			compare = less_than
+		}
+	}
+}
 controller_has_war_with_owner = {
 	custom_trigger_tooltip = {
 		tooltip = controller_has_war_with_owner_tt
